@@ -9,7 +9,7 @@ import java.util.Date;
 @Table(name = "posts")
 public class Post {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "is_active", nullable = false)
     private boolean isActive;

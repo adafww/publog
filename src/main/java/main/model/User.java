@@ -7,7 +7,7 @@ import java.util.Date;
 @Table(name = "Students")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(nullable = false, name = "is_moderator")
     private boolean isModerator;
