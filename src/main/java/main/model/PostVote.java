@@ -8,7 +8,7 @@ public class PostVote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
     private User user;
     @OneToOne(cascade = CascadeType.ALL)

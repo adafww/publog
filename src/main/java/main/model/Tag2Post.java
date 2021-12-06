@@ -11,9 +11,9 @@ public class Tag2Post {
     @OneToOne
     @JoinColumn(name = "post_id", insertable = false, updatable = false, nullable = false)
     private Post postId;
-    @OneToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false, nullable = false)
-    private User userID;
+    @ManyToOne
+    @JoinColumn(name = "tag_id", insertable = false, updatable = false, nullable = false)
+    private Tag tagID;
 
     public int getId() {
         return id;
@@ -31,11 +31,11 @@ public class Tag2Post {
         this.postId = postId;
     }
 
-    public User getUserID() {
-        return userID;
+    public Tag getTagID() {
+        return tagID;
     }
 
-    public void setUserID(User userID) {
-        this.userID = userID;
+    public void setTagID(Tag tagID) {
+        this.tagID = tagID;
     }
 }
