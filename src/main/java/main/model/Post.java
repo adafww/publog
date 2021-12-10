@@ -13,8 +13,9 @@ public class Post {
     private int id;
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
-    @Column(name = "moderation_status", nullable = false)
-    private String moderationStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "moderation_status", nullable = false, columnDefinition = "enum('NEW', 'ACCEPTED', 'DECLINED')")
+    private ModerationStatusType moderationStatusType;
     @ManyToOne(cascade = CascadeType.ALL)
     @Check(constraints = "moderator_id.isModerator == true OR NULL")
     @JoinColumn(name = "moderator_id", insertable = false, updatable = false)
@@ -47,12 +48,12 @@ public class Post {
         isActive = active;
     }
 
-    public ModerationStatusType getType() {
-        return ModerationStatusType.valueOf(moderationStatus);
+    public ModerationStatusType getModerationStatusType() {
+        return moderationStatusType;
     }
 
-    public void setType(ModerationStatusType moderationStatus) {
-        this.moderationStatus = moderationStatus.toString();
+    public void setModerationStatusType(ModerationStatusType moderationStatusType) {
+        this.moderationStatusType = moderationStatusType;
     }
 
     public User getModerator() {

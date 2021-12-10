@@ -22,4 +22,52 @@ public class PostComment {
     private Date time;
     @Column(nullable = false)
     private String text;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public PostComment getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(PostComment parentId) {
+        this.parentId = parentId;
+    }
+
+    public Post getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Post postId) {
+        this.postId = postId;
+    }
+
+    public User getUserId() {
+        return userId;
+    }
+
+    public void setUserId(User userId) {
+        this.userId = userId;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 }
