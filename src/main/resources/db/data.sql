@@ -36,10 +36,10 @@ INSERT INTO post_votes (time, value, post_id, user_id) VALUES ('2021-12-06', 1, 
                                                               ('2021-12-06', 1, 3, 3),
                                                               ('2021-12-06', 0, 3, 4),
                                                               ('2021-12-06', 1, 3, 5);
-INSERT INTO tags (name) VALUES ('some text1'),
-                               ('some text2'),
-                               ('some text3'),
-                               ('some text4');
+INSERT INTO tags (name) VALUES ('Java'),
+                               ('Spring'),
+                               ('Hibernate'),
+                               ('Hadoop');
 INSERT INTO tag2post (post_id, tag_id) VALUES (2, 1),
                                               (2, 2),
                                               (2, 3),
