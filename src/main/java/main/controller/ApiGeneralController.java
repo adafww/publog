@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.TreeMap;
@@ -109,7 +110,7 @@ public class ApiGeneralController {
                 }
             }
             postJsonObject.addProperty("id", post.getId());
-            postJsonObject.addProperty("timestamp", post.getTime().getTime());
+            postJsonObject.addProperty("timestamp", Long.parseLong(Long.toString(post.getTime().getTime()).substring(0, Long.toString(post.getTime().getTime()).length() - 3)));
             postJsonObject.add("user", userJsonObject);
             postJsonObject.addProperty("title", post.getTitle());
             postJsonObject.addProperty("announce", announceText.length() > announceLimit ? announceText.substring(0, announceLimit) : announceText);
@@ -150,9 +151,8 @@ public class ApiGeneralController {
                 treeJsonObject.addProperty("name", entry.getKey().toString());
                 treeJsonObject.addProperty("weight", 1.0);
             }else {
-                double weight = k * ((double) ((int) entry.getValue()) / hashTags.size());
                 treeJsonObject.addProperty("name", entry.getKey().toString());
-                treeJsonObject.addProperty("weight", Double.parseDouble(Double.toString(weight).substring(0, 4)));
+                treeJsonObject.addProperty("weight", Math.round(k * ((double) ((int) entry.getValue()) / hashTags.size()) * 100.0) / 100.0);
             }
             jsonArray.add(treeJsonObject);
         }
