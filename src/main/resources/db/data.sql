@@ -19,11 +19,11 @@ INSERT INTO captcha_codes (time, code, secret_code) VALUES ('2021-12-06', 'sad1'
 INSERT INTO global_settings (code, name, value) VALUES ('MULTIUSER_MODE', 'Многопользовательский режим ', 'NO'),
                                                        ('POST_PREMODERATION', 'Премодерация постов ', 'YES'),
                                                        ('STATISTICS_IS_PUBLIC ', 'Показывать всем статистику блога', 'YES');
-INSERT INTO posts (is_active, text, time, title, moderation_status, view_count, moderator_id, user_id) VALUES (1, 'some text1', '2021-12-06', 'some title', 'NEW', 2, 1, 1),
+INSERT INTO posts (is_active, text, time, title, moderation_status, view_count, moderator_id, user_id) VALUES (1, 'some text1', '2021-12-06', 'some title', 'NEW', 1, 1, 1),
                                                                                                               (1, 'some text2', '2021-12-07', 'some title', 'ACCEPTED', 2, 5, 9),
-                                                                                                              (1, 'some text3', '2021-12-08', 'some title', 'ACCEPTED', 2, 5, 8),
-                                                                                                              (1, 'some text4', '2021-12-10', 'some title', 'DECLINED', 2, 5, 7),
-                                                                                                              (1, 'some text5', '2021-12-11', 'some title', 'NEW', 2, 5, 2);
+                                                                                                              (1, 'some text3', '2021-12-08', 'some title', 'ACCEPTED', 3, 5, 8),
+                                                                                                              (1, 'some text4', '2021-12-10', 'some title', 'DECLINED', 4, 5, 7),
+                                                                                                              (1, 'some text5', '2021-12-11', 'some title', 'NEW', 7, 5, 2);
 INSERT INTO post_comments (text, time, post_id, user_id) VALUES ('some text1', '2021-12-10', 2, 1),
                                                                 ('some text2', '2021-12-10', 2, 1),
                                                                 ('some text3', '2021-12-11', 3, 1),
@@ -47,3 +47,10 @@ INSERT INTO tag2post (post_id, tag_id) VALUES (2, 1),
                                               (3, 4),
                                               (3, 4),
                                               (3, 4);
+INSERT INTO post_comments (text, time, post_id, user_id) VALUES ('some text1', '2021-12-10', 1, 1),
+                                                                ('some text2', '2021-12-10', 1, 1),
+                                                                ('some text3', '2021-12-11', 1, 1),
+                                                                ('some text4', '2021-12-11', 1, 1),
+                                                                ('some text5', '2021-12-11', 1, 1),
+                                                                ('some text6', '2021-12-11', 3, 1),
+                                                                ('some text7', '2021-12-10', 1, 1);

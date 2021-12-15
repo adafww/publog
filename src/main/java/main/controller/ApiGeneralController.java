@@ -4,15 +4,22 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import main.model.*;
 import main.services.*;
+import org.apache.tomcat.util.digester.ArrayStack;
 import org.jsoup.Jsoup;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @RestController
 public class ApiGeneralController {
@@ -71,12 +78,48 @@ public class ApiGeneralController {
         jsonObject.addProperty("result", false);
         return jsonObject.toString();
     }
-    @GetMapping("/api/post")
-    public String postInfo(){
-        Iterable<Post> postIterable = postRepository.findAll();
+    @GetMapping(value = "/api/post", params = {"offset", "limit", "mode"})
+    public String postInfo(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
+
+        if(mode.equals("popular")){
+            Iterable<Post> postIterable = postRepository.findAll();
+            Iterable<PostComment> commIterable = commentRepository.findAll();
+            Hashtable<Post, Integer> list = new Hashtable<>();
+            ArrayList<Post> finalList = new ArrayList<>();
+            for (Post post : postIterable){
+                if(post.getModerationStatusType() == ModerationStatusType.ACCEPTED){
+                }
+                list.put(post, commentCount(post.getId(), commIterable));
+            }
+            list.entrySet().stream().sorted(Map.Entry.<Post, Integer>comparingByValue().reversed()).limit(limit).forEach(a -> finalList.add(a.getKey()));
+            return postIterable(finalList);
+
+        }else if(mode.equals("best")){
+            Iterable<Post> postIterable = postRepository.findAll();
+            Iterable<PostVote> voteIterable = voteRepository.findAll();
+            Hashtable<Post, Integer> list = new Hashtable<>();
+            ArrayList<Post> finalList = new ArrayList<>();
+            for (Post post : postIterable){
+                if((dislikeCount(post.getId(), voteIterable) > 0) && post.getModerationStatusType() == ModerationStatusType.ACCEPTED){
+                    list.put(post, likeAndDislikeCount(post.getId(), voteIterable)[0]);
+                }
+            }
+            list.entrySet().stream().sorted(Map.Entry.<Post, Integer>comparingByValue().reversed()).limit(limit).forEach(a -> finalList.add(a.getKey()));
+            return postIterable(postRepository.findAll(Sort.by(Sort.Direction.ASC, "time")));
+
+        }else if(mode.equals("early")){
+
+            return postIterable(postRepository.findAll(PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, "time"))));
+
+        }else {
+
+            return postIterable(postRepository.findAll(PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "time"))));
+
+        }
+    }
+    private String postIterable(Iterable<Post> postIterable1){
+        Iterable<Post> postIterable = postIterable1;
         Iterable<User> userIterable = userRepository.findAll();
-        Iterable<PostVote> postVoteIterable = voteRepository.findAll();
-        Iterable<PostComment> postCommentIterable = commentRepository.findAll();
         JsonObject jsonObject = new JsonObject();
         JsonArray jsonArray = new JsonArray();
         int postCount = 0;
@@ -85,9 +128,6 @@ public class ApiGeneralController {
             postCount++;
             JsonObject postJsonObject = new JsonObject();
             JsonObject userJsonObject = new JsonObject();
-            int likeCount = 0;
-            int disCount = 0;
-            int commentCount = 0;
             int postId = post.getId();
             int userId = post.getUser().getId();
             String announceText = Jsoup.parse(post.getText()).text();
@@ -97,26 +137,14 @@ public class ApiGeneralController {
                     userJsonObject.addProperty("name", user.getName());
                 }
             }
-            for(PostVote postVote : postVoteIterable){
-                if(postVote.isValue()){
-                    likeCount++;
-                }else {
-                    disCount++;
-                }
-            }
-            for (PostComment postComment : postCommentIterable){
-                if(postId == postComment.getPostId().getId()){
-                    commentCount++;
-                }
-            }
             postJsonObject.addProperty("id", post.getId());
             postJsonObject.addProperty("timestamp", Long.parseLong(Long.toString(post.getTime().getTime()).substring(0, Long.toString(post.getTime().getTime()).length() - 3)));
             postJsonObject.add("user", userJsonObject);
             postJsonObject.addProperty("title", post.getTitle());
             postJsonObject.addProperty("announce", announceText.length() > announceLimit ? announceText.substring(0, announceLimit) : announceText);
-            postJsonObject.addProperty("likeCount", likeCount);
-            postJsonObject.addProperty("dislikeCount", disCount);
-            postJsonObject.addProperty("commentCount", commentCount);
+            postJsonObject.addProperty("likeCount", likeAndDislikeCount(postId, voteRepository.findAll())[0]);
+            postJsonObject.addProperty("dislikeCount", likeAndDislikeCount(postId, voteRepository.findAll())[1]);
+            postJsonObject.addProperty("commentCount", commentCount(postId, commentRepository.findAll()));
             postJsonObject.addProperty("viewCount", post.getViewCount());
             jsonArray.add(postJsonObject);
         }
@@ -124,6 +152,50 @@ public class ApiGeneralController {
         jsonObject.add("posts", jsonArray);
 
         return jsonObject.toString();
+    }
+    private int commentCount(int postId, Iterable<PostComment> postCommentIterable){
+        int commentCount = 0;
+        for (PostComment postComment : postCommentIterable){
+            if(postId == postComment.getPostId().getId()){
+                commentCount++;
+            }
+        }
+        return commentCount;
+    }
+    private int[] likeAndDislikeCount(int postId, Iterable<PostVote> postVoteIterable){
+        int[] array = new int[] {0 ,0};
+        for(PostVote postVote : postVoteIterable){
+            if(postId == postVote.getPost().getId()){
+                if(postVote.isValue()){
+                    array[0]++;
+                }else {
+                    array[1]++;
+                }
+            }
+        }
+        return array;
+    }
+    private int likeCount(int postId, Iterable<PostVote> postVoteIterable){
+        int count = 0;
+        for(PostVote postVote : postVoteIterable){
+            if(postId == postVote.getPost().getId()){
+                if(postVote.isValue()){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    private int dislikeCount(int postId, Iterable<PostVote> postVoteIterable){
+        int count = 0;
+        for(PostVote postVote : postVoteIterable){
+            if(postId == postVote.getPost().getId()){
+                if(!postVote.isValue()){
+                    count++;
+                }
+            }
+        }
+        return count;
     }
     @GetMapping("/api/tag")
     public String apiTag(){
@@ -157,6 +229,12 @@ public class ApiGeneralController {
             jsonArray.add(treeJsonObject);
         }
         jsonObject.add("tags", jsonArray);
+        return jsonObject.toString();
+    }
+    @GetMapping("/api/post/search")
+    public String postSearch(){
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("result", false);
         return jsonObject.toString();
     }
 }
