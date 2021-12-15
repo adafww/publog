@@ -32,8 +32,15 @@ INSERT INTO post_comments (text, time, post_id, user_id) VALUES ('some text1', '
                                                                 ('some text6', '2021-12-11', 3, 1),
                                                                 ('some text7', '2021-12-10', 2, 1);
 INSERT INTO post_votes (time, value, post_id, user_id) VALUES ('2021-12-06', 1, 2, 1),
-                                                              ('2021-12-06', 0, 2, 2),
-                                                              ('2021-12-06', 1, 3, 3),
+                                                              ('2021-12-06', 1, 2, 2),
+                                                              ('2021-12-06', 1, 2, 7),
+                                                              ('2021-12-06', 1, 2, 7),
+                                                              ('2021-12-06', 1, 2, 6),
+                                                              ('2021-12-06', 1, 2, 6),
+                                                              ('2021-12-06', 1, 2, 6),
+                                                              ('2021-12-06', 1, 2, 6),
+                                                              ('2021-12-06', 1, 2, 6),
+                                                              ('2021-12-06', 1, 3, 6),
                                                               ('2021-12-06', 0, 3, 4),
                                                               ('2021-12-06', 1, 3, 5);
 INSERT INTO tags (name) VALUES ('Java'),
@@ -47,10 +54,3 @@ INSERT INTO tag2post (post_id, tag_id) VALUES (2, 1),
                                               (3, 4),
                                               (3, 4),
                                               (3, 4);
-INSERT INTO post_comments (text, time, post_id, user_id) VALUES ('some text1', '2021-12-10', 1, 1),
-                                                                ('some text2', '2021-12-10', 1, 1),
-                                                                ('some text3', '2021-12-11', 1, 1),
-                                                                ('some text4', '2021-12-11', 1, 1),
-                                                                ('some text5', '2021-12-11', 1, 1),
-                                                                ('some text6', '2021-12-11', 3, 1),
-                                                                ('some text7', '2021-12-10', 1, 1);

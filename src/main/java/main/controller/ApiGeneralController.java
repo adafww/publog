@@ -4,21 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import main.model.*;
 import main.services.*;
-import org.apache.tomcat.util.digester.ArrayStack;
 import org.jsoup.Jsoup;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Timestamp;
-import java.text.DecimalFormat;
 import java.util.*;
 
 @RestController
@@ -82,38 +74,20 @@ public class ApiGeneralController {
     public String postInfo(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
 
         if(mode.equals("popular")){
-            Iterable<Post> postIterable = postRepository.findAll();
-            Iterable<PostComment> commIterable = commentRepository.findAll();
-            Hashtable<Post, Integer> list = new Hashtable<>();
-            ArrayList<Post> finalList = new ArrayList<>();
-            for (Post post : postIterable){
-                if(post.getModerationStatusType() == ModerationStatusType.ACCEPTED){
-                }
-                list.put(post, commentCount(post.getId(), commIterable));
-            }
-            list.entrySet().stream().sorted(Map.Entry.<Post, Integer>comparingByValue().reversed()).limit(limit).forEach(a -> finalList.add(a.getKey()));
-            return postIterable(finalList);
+
+            return postIterable(postRepository.findPopular(PageRequest.of(offset, limit)));
 
         }else if(mode.equals("best")){
-            Iterable<Post> postIterable = postRepository.findAll();
-            Iterable<PostVote> voteIterable = voteRepository.findAll();
-            Hashtable<Post, Integer> list = new Hashtable<>();
-            ArrayList<Post> finalList = new ArrayList<>();
-            for (Post post : postIterable){
-                if((dislikeCount(post.getId(), voteIterable) > 0) && post.getModerationStatusType() == ModerationStatusType.ACCEPTED){
-                    list.put(post, likeAndDislikeCount(post.getId(), voteIterable)[0]);
-                }
-            }
-            list.entrySet().stream().sorted(Map.Entry.<Post, Integer>comparingByValue().reversed()).limit(limit).forEach(a -> finalList.add(a.getKey()));
-            return postIterable(postRepository.findAll(Sort.by(Sort.Direction.ASC, "time")));
+
+            return postIterable(postRepository.findBest(PageRequest.of(offset, limit)));
 
         }else if(mode.equals("early")){
 
-            return postIterable(postRepository.findAll(PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, "time"))));
+            return postIterable(postRepository.findRecentEarly(PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, "time"))));
 
         }else {
 
-            return postIterable(postRepository.findAll(PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "time"))));
+            return postIterable(postRepository.findRecentEarly(PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "time"))));
 
         }
     }
@@ -174,28 +148,6 @@ public class ApiGeneralController {
             }
         }
         return array;
-    }
-    private int likeCount(int postId, Iterable<PostVote> postVoteIterable){
-        int count = 0;
-        for(PostVote postVote : postVoteIterable){
-            if(postId == postVote.getPost().getId()){
-                if(postVote.isValue()){
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-    private int dislikeCount(int postId, Iterable<PostVote> postVoteIterable){
-        int count = 0;
-        for(PostVote postVote : postVoteIterable){
-            if(postId == postVote.getPost().getId()){
-                if(!postVote.isValue()){
-                    count++;
-                }
-            }
-        }
-        return count;
     }
     @GetMapping("/api/tag")
     public String apiTag(){
