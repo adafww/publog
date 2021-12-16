@@ -1,12 +1,10 @@
-package main.services;
+package main.repository;
 
 import main.model.Post;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {

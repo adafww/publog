@@ -1,7 +1,12 @@
 package main.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import javax.persistence.*;
 import java.util.Date;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "post_votes")
 public class PostVote {
@@ -18,44 +23,4 @@ public class PostVote {
     private Date time;
     @Column(nullable = false)
     private boolean value;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
-    public boolean isValue() {
-        return value;
-    }
-
-    public void setValue(boolean value) {
-        this.value = value;
-    }
 }

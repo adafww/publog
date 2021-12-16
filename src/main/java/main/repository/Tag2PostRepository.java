@@ -1,4 +1,4 @@
-package main.services;
+package main.repository;
 
 import main.model.Tag2Post;
 import org.springframework.data.repository.CrudRepository;

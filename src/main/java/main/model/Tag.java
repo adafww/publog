@@ -1,7 +1,11 @@
 package main.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import javax.persistence.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "tags")
 public class Tag {
@@ -10,20 +14,4 @@ public class Tag {
     private int id;
     @Column(nullable = false)
     private String name;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
