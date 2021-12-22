@@ -19,4 +19,9 @@ public class ApiPostController {
     public ResponseEntity<ApiPostResponse> postInfo(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
         return new ResponseEntity<>(apiPostService.getApiPostResponse(offset, limit, mode), HttpStatus.OK);
     }
+
+    @GetMapping(value = "/api/post/search", params = {"offset", "limit", "query"})
+    public ResponseEntity<ApiPostResponse> postSearch(@RequestParam int offset, @RequestParam int limit, @RequestParam String query){
+        return new ResponseEntity<>(apiPostService.getApiPostSearch(offset, limit, query), HttpStatus.OK);
+    }
 }

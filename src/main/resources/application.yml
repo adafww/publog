@@ -2,7 +2,6 @@ spring.datasource.url: jdbc:mysql://localhost:3306/lib
 spring.datasource.username: root
 spring.datasource.password: 80958095
 spring.jpa.hibernate.ddl-auto: update
-spring.jpa.show-sql: true
 
 blog.title: DevPub
 blog.subtitle: Рассказы разработчиков
