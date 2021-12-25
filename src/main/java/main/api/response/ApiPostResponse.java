@@ -9,6 +9,8 @@ import java.util.List;
 @Setter
 @Getter
 public class ApiPostResponse {
+
     private int count;
     private List<PostDto> posts;
+
 }
