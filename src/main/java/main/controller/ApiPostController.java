@@ -52,6 +52,6 @@ public class ApiPostController {
 
     @GetMapping(value = "/api/post/{ID}")
     public ResponseEntity<ApiPostIdResponse> postById(@PathVariable int ID){
-        return new ResponseEntity<>(apiPostService.getPostById(ID), HttpStatus.OK);
+        return new ResponseEntity<>(apiPostService.getPostById(ID), HttpStatus.NOT_FOUND);
     }
 }
