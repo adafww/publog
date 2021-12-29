@@ -5,20 +5,12 @@ import com.github.cage.image.Painter;
 import main.api.response.ApiAuthCaptchaResponse;
 import main.model.CaptchaCode;
 import main.repository.CaptchaCodeRepository;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractRefreshableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.support.XmlWebApplicationContext;
-import org.thymeleaf.context.IContext;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -27,9 +19,12 @@ import java.util.Random;
 @Service
 public class ApiAuthCaptchaService {
 
-    CaptchaCodeRepository captchaCodeRepo;
+    @Autowired
+    private CaptchaCodeRepository codeRepository;
 
-    public ApiAuthCaptchaResponse getApiAuthCaptcha() {
+    private final long HOUR_UTC = 3600000;
+
+        public ApiAuthCaptchaResponse getApiAuthCaptcha() {
 
         String captchaCode = genRandCode(4, 6);
         ApiAuthCaptchaResponse apiAuthCaptchaResponse = new ApiAuthCaptchaResponse();
@@ -57,9 +52,12 @@ public class ApiAuthCaptchaService {
         apiAuthCaptchaResponse.setImage(encodedString);
         Date date = Date.from(Instant.now());
 
-        captchaCodeRepo.save(new CaptchaCode(date, captchaCode, secretCode));
-
-        //captchaCodeRepo.insert(captchaCode, secretCode);
+        for (CaptchaCode code : codeRepository.findAll()){
+            if(date.getTime() - code.getTime().getTime() > HOUR_UTC){
+                codeRepository.delete(code);
+            }
+        }
+        codeRepository.save(new CaptchaCode(date, captchaCode, secretCode));
 
         return apiAuthCaptchaResponse;
     }

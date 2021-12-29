@@ -38,12 +38,15 @@ public class ApiPostService {
 
     public ApiPostIdResponse getPostById(int id){
 
+        //добавить кол-во просмотров!!!!
+
         ApiPostIdResponse apiPostIdResponse = new ApiPostIdResponse();
         PostForDtoRepository postDtoIterable = postRepo.findPostId(id).stream().findFirst().get();
         List<CommentForPostForDto> comPostForDto = postCommentRepo.findPostCommentById(id);
         List<CommentPostDto> commentPostDtoList = new ArrayList<>();
         HashSet<String> stringHashSet = new HashSet<>();
         CommentPostDto commentPostDto;
+
         for(CommentForPostForDto postComment : comPostForDto){
             commentPostDto = new CommentPostDto();
             commentPostDto.setId(postComment.getId());
@@ -53,6 +56,7 @@ public class ApiPostService {
             commentPostDtoList.add(commentPostDto);
             stringHashSet.add(postComment.getTag());
         }
+
         apiPostIdResponse.setId(postDtoIterable.getId());
         apiPostIdResponse.setTimestamp(Long.parseLong(Long.toString(postDtoIterable.getTimestamp().getTime()).substring(0, Long.toString(postDtoIterable.getTimestamp().getTime()).length() - 3)));
         apiPostIdResponse.setUser(userRepo.findById(postDtoIterable.getUserId()).get(0));
