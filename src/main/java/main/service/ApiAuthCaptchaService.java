@@ -7,6 +7,7 @@ import main.model.CaptchaCode;
 import main.repository.CaptchaCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,15 +52,21 @@ public class ApiAuthCaptchaService {
         apiAuthCaptchaResponse.setSecret(secretCode);
         apiAuthCaptchaResponse.setImage(encodedString);
         Date date = Date.from(Instant.now());
+        codeRepository.save(new CaptchaCode(date, captchaCode, secretCode));
+
+        return apiAuthCaptchaResponse;
+    }
+
+    @Scheduled(fixedRate = 3_600_000)
+    private void delCaptchaForOneHour(){
+
+        Date date = Date.from(Instant.now());
 
         for (CaptchaCode code : codeRepository.findAll()){
             if(date.getTime() - code.getTime().getTime() > HOUR_UTC){
                 codeRepository.delete(code);
             }
         }
-        codeRepository.save(new CaptchaCode(date, captchaCode, secretCode));
-
-        return apiAuthCaptchaResponse;
     }
 
     private String genRandCode(int minimumLength, int maximumLength) {
