@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -23,7 +24,7 @@ public class ApiAuthCaptchaService {
     @Autowired
     private CaptchaCodeRepository codeRepository;
 
-    private final long HOUR_UTC = 3600000;
+    private final long HOUR_UTC = 3_600_000;
 
         public ApiAuthCaptchaResponse getApiAuthCaptcha() {
 
@@ -57,16 +58,10 @@ public class ApiAuthCaptchaService {
         return apiAuthCaptchaResponse;
     }
 
-    @Scheduled(fixedRate = 3_600_000)
+    @Scheduled(fixedRate = HOUR_UTC)
     private void delCaptchaForOneHour(){
 
-        Date date = Date.from(Instant.now());
-
-        for (CaptchaCode code : codeRepository.findAll()){
-            if(date.getTime() - code.getTime().getTime() > HOUR_UTC){
-                codeRepository.delete(code);
-            }
-        }
+        codeRepository.deleteByDate(new Date(System.currentTimeMillis() - HOUR_UTC));
     }
 
     private String genRandCode(int minimumLength, int maximumLength) {
