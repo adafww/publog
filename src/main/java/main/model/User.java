@@ -25,4 +25,15 @@ public class User {
     private String password;
     private String code;
     private String photo;
+
+    public User(Date time, String name, String email, String password) {
+        this.regTime = time;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    public User() {
+
+    }
 }

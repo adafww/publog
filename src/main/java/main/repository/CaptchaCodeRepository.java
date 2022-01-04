@@ -20,4 +20,6 @@ public interface CaptchaCodeRepository extends CrudRepository<CaptchaCode, Integ
     @Query("delete from CaptchaCode c where c.time < :date")
     void deleteByDate(@Param("date") Date date);
 
+    @Query("select case when count (c) > 0 then true else false end from CaptchaCode c where c.code like :captcha")
+    boolean existsByCaptcha(@Param("captcha") String captcha);
 }

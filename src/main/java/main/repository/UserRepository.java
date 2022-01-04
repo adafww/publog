@@ -18,4 +18,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
     @Query("select new main.dto.UserDtoWithPhoto(u.id, u.name, u.photo) from User u where u.id = :id")
     List<UserDtoWithPhoto> findByIdWithPhoto(@Param("id") int id);
+
+    @Query("select case when count (u) > 0 then true else false end from User u where u.email like :email")
+    boolean existsByEmail(@Param("email") String email);
 }
