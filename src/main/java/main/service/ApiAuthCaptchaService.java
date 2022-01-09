@@ -2,6 +2,7 @@ package main.service;
 
 import com.github.cage.Cage;
 import com.github.cage.image.Painter;
+import lombok.RequiredArgsConstructor;
 import main.api.response.ApiAuthCaptchaResponse;
 import main.model.CaptchaCode;
 import main.repository.CaptchaCodeRepository;
@@ -18,17 +19,17 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Random;
 
+@RequiredArgsConstructor
 @Service
 public class ApiAuthCaptchaService {
 
-    @Autowired
-    private CaptchaCodeRepository codeRepository;
+    private final CaptchaCodeRepository codeRepository;
 
     private final long HOUR_UTC = 3_600_000;
 
         public ApiAuthCaptchaResponse getApiAuthCaptcha() {
 
-        String captchaCode = genRandCode(4, 6);
+        String captchaCode = genRandCode(4, 5);
         ApiAuthCaptchaResponse apiAuthCaptchaResponse = new ApiAuthCaptchaResponse();
         Random rnd = new Random();
         Cage cage = new Cage();

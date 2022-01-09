@@ -8,6 +8,7 @@ import main.service.ApiPostService;
 import main.service.ApiCalendarService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,11 +22,13 @@ public class ApiPostController {
     private final ApiCalendarService apiCalendarService;
 
     @GetMapping(value = "/api/post", params = {"offset", "limit", "mode"})
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<ApiPostResponse> postInfo(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
         return new ResponseEntity<>(apiPostService.getApiPostResponse(offset, limit, mode), HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/post/search", params = {"offset", "limit", "query"})
+    @PreAuthorize("hasAuthority('user:moderate')")
     public ResponseEntity<ApiPostResponse> postSearch(@RequestParam int offset, @RequestParam int limit, @RequestParam String query){
         return new ResponseEntity<>(apiPostService.getApiPostSearch(offset, limit, query), HttpStatus.OK);
     }

@@ -33,7 +33,9 @@ public class User {
         this.password = password;
     }
 
-    public User() {
+    public User() {}
 
+    public Role getRole() {
+        return isModerator == true ? Role.MODERATOR : Role.USER;
     }
 }
