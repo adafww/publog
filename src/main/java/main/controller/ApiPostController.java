@@ -23,7 +23,9 @@ public class ApiPostController {
 
     @GetMapping(value = "/api/post", params = {"offset", "limit", "mode"})
     @PreAuthorize("hasAuthority('user:write')")
-    public ResponseEntity<ApiPostResponse> postInfo(@RequestParam int offset, @RequestParam int limit, @RequestParam String mode){
+    public ResponseEntity<ApiPostResponse> postInfo(@RequestParam(defaultValue = "0", required = false) int offset,
+                                                    @RequestParam(defaultValue = "20", required = false) int limit,
+                                                    @RequestParam(defaultValue = "recent", required = false) String mode){
         return new ResponseEntity<>(apiPostService.getApiPostResponse(offset, limit, mode), HttpStatus.OK);
     }
 

@@ -27,13 +27,6 @@ public class ApiGeneralController {
         return settingsService.getGlobalSettings();
     }
 
-    @GetMapping("/api/auth/check")
-    public String authCheck(){
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("result", false);
-        return jsonObject.toString();
-    }
-
     @GetMapping("/api/tag")
     public TagResponse apiTag(){
         return tagService.getTagResponse();

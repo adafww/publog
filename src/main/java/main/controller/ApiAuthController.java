@@ -1,6 +1,6 @@
 package main.controller;
 
-import lombok.RequiredArgsConstructor;
+import com.google.gson.JsonObject;
 import main.api.request.LoginRequest;
 import main.api.response.ApiAuthCaptchaResponse;
 import main.api.response.ApiAuthRegisterAbstractResponse;
@@ -10,6 +10,7 @@ import main.api.response.UserLoginResponse;
 import main.repository.UserRepository;
 import main.service.ApiAuthCaptchaService;
 import main.service.ApiAuthRegisterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,8 +22,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class ApiAuthController {
@@ -30,12 +31,32 @@ public class ApiAuthController {
     private final ApiAuthCaptchaService apiAuthCaptchaService;
     private final ApiAuthRegisterService apiAuthRegisterService;
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
 
+
+    @Autowired
+    public ApiAuthController(ApiAuthCaptchaService apiAuthCaptchaService,
+                             ApiAuthRegisterService apiAuthRegisterService,
+                             AuthenticationManager authenticationManager,
+                             UserRepository userRepository) {
+        this.apiAuthCaptchaService = apiAuthCaptchaService;
+        this.apiAuthRegisterService = apiAuthRegisterService;
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping(value = "/captcha")
     public ApiAuthCaptchaResponse captcha() throws IOException {
         return apiAuthCaptchaService.getApiAuthCaptcha();
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<LoginResponse> check(Principal principal){
+
+        if(principal == null){
+            return ResponseEntity.ok(new LoginResponse());
+        }
+        return ResponseEntity.ok(getLoginResponse(principal.getName()));
     }
 
     @PostMapping(value = "/register")
@@ -48,25 +69,29 @@ public class ApiAuthController {
         Authentication auth = authenticationManager
                 .authenticate(
                         new UsernamePasswordAuthenticationToken(entity.getEmail(), entity.getPassword()));
+
         SecurityContextHolder.getContext().setAuthentication(auth);
         User user = (User) auth.getPrincipal();
+
+        return ResponseEntity.ok(getLoginResponse(user.getUsername()));
+    }
+    private LoginResponse getLoginResponse(String email) {
+
         main.model.User currentUser =
-                userRepo.findByEmail(
-                        user.getUsername()).orElseThrow(
-                                () -> new UsernameNotFoundException(user.getUsername()
-                                )
-                );
+                userRepository.findByEmail(
+                        email).orElseThrow(
+                        () -> new UsernameNotFoundException(email));
 
         UserLoginResponse userLoginResponse = new UserLoginResponse();
         userLoginResponse.setEmail(currentUser.getEmail());
-        userLoginResponse.setModeration(currentUser.isModerator() == true);
+        userLoginResponse.setName(currentUser.getName());
+        userLoginResponse.setModeration(currentUser.isModerator());
         userLoginResponse.setId(currentUser.getId());
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setResult(true);
         loginResponse.setUserLoginResponse(userLoginResponse);
-        System.out.println(entity.getEmail());
-        System.out.println(entity.getPassword());
-        return ResponseEntity.ok(new LoginResponse());
+
+        return loginResponse;
     }
 }
