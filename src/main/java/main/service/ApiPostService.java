@@ -12,8 +12,10 @@ import main.repository.PostRepository;
 import main.repository.UserRepository;
 import org.jsoup.Jsoup;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +27,7 @@ public class ApiPostService {
     private final PostRepository postRepo;
     private final UserRepository userRepo;
     private final PostCommentRepository postCommentRepo;
+    private final LoginService loginService;
 
     public ApiPostResponse getApiPostSearch(int offset, int limit, String query){
 
@@ -38,8 +41,14 @@ public class ApiPostService {
 
     public ApiPostIdResponse getPostById(int id){
 
-        //добавить кол-во просмотров!!!!
+        /*String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(currentUser != null){
 
+            postRepo.incrementViewById(id);
+        }else {
+            System.out.println("!!!!!!!!!");
+
+        }*/
         ApiPostIdResponse apiPostIdResponse = new ApiPostIdResponse();
         PostForDtoRepository postDtoIterable = postRepo.findPostId(id).stream().findFirst().get();
         List<CommentForPostForDto> comPostForDto = postCommentRepo.findPostCommentById(id);

@@ -23,7 +23,7 @@ public class ApiAuthRegisterService {
     private final UserRepository userRepo;
     private final CaptchaCodeRepository captchaCodeRepo;
 
-    public ApiAuthRegisterAbstractResponse response (RegFormRequest regFormRequest){
+    public ApiAuthRegisterAbstractResponse getApiAuthRegisterResponse (RegFormRequest regFormRequest){
 
         Hashtable<String, String> errors = new Hashtable<>();
         Pattern pattern = Pattern.compile("^[А-ЯЁа-яё]+");

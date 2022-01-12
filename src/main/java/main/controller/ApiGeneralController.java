@@ -7,6 +7,8 @@ import main.api.response.SettingsResponse;
 import main.api.response.TagResponse;
 import main.service.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
