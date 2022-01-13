@@ -41,20 +41,19 @@ public class ApiPostService {
 
     public ApiPostIdResponse getPostById(int id){
 
-        /*String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(currentUser != null){
-
-            postRepo.incrementViewById(id);
-        }else {
-            System.out.println("!!!!!!!!!");
-
-        }*/
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         ApiPostIdResponse apiPostIdResponse = new ApiPostIdResponse();
         PostForDtoRepository postDtoIterable = postRepo.findPostId(id).stream().findFirst().get();
         List<CommentForPostForDto> comPostForDto = postCommentRepo.findPostCommentById(id);
         List<CommentPostDto> commentPostDtoList = new ArrayList<>();
         HashSet<String> stringHashSet = new HashSet<>();
         CommentPostDto commentPostDto;
+
+        //view count
+        if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 1
+                && !postRepo.isAuthor(id, currentUser)){
+            postRepo.incrementViewById(id);
+        }
 
         for(CommentForPostForDto postComment : comPostForDto){
             commentPostDto = new CommentPostDto();

@@ -33,11 +33,4 @@ public class ApiGeneralController {
     public TagResponse apiTag(){
         return tagService.getTagResponse();
     }
-
-    @GetMapping("/api/post/search")
-    public String postSearch(){
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("result", false);
-        return jsonObject.toString();
-    }
 }

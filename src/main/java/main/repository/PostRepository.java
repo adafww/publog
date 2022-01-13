@@ -202,4 +202,12 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "set p.viewCount = p.viewCount + 1 " +
             "where p.id = :postId ")
     void incrementViewById(@Param("postId") int postId);
+
+    @Query("select " +
+            "case when count (p) > 0 then true else false end " +
+            "from Post p " +
+            "left join User u on p.user.id = u.id " +
+            "where p.id = :postId " +
+            "and u.email like :email")
+    boolean isAuthor(@Param("postId") int postId, @Param("email") String email);
 }
