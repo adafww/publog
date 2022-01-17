@@ -3,7 +3,9 @@ package main.controller;
 import lombok.RequiredArgsConstructor;
 import main.api.request.CommentRequest;
 import main.api.request.PostRequest;
+import main.api.request.PostVotesRequest;
 import main.api.response.*;
+import main.model.Role;
 import main.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class ApiPostController {
     private final ApiCalendarService apiCalendarService;
     private final CreatePostService createPostService;
     private final CommentService commentService;
+    private final PostVotesService postVotesService;
 
     @GetMapping(value = "/api/post", params = {"offset", "limit", "mode"})
     public ResponseEntity<ApiPostResponse> postInfo(@RequestParam(defaultValue = "0", required = false) int offset,
@@ -88,5 +91,22 @@ public class ApiPostController {
                         .getAuthentication()
                         .getName(), status),
                 HttpStatus.OK);
+    }
+    @PostMapping("/api/post/like")
+    public ResponseEntity<PostVotesResponse> like(@RequestBody PostVotesRequest request){
+        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+            return new ResponseEntity<>(postVotesService.getLike(request.getPostId()), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping("/api/post/dislike")
+    public ResponseEntity<PostVotesResponse> dislike(@RequestBody PostVotesRequest request){
+        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+            return new ResponseEntity<>(postVotesService.getDislike(request.getPostId()), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 }
