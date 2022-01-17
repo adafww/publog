@@ -13,13 +13,11 @@ public class CommentForPostForDto {
     private Date timestamp;
     private String text;
     private int userId;
-    private String tag;
 
-    public CommentForPostForDto(int id, Date timestamp, String text, int userId, String tag) {
+    public CommentForPostForDto(int id, Date timestamp, String text, int userId) {
         this.id = id;
         this.timestamp = timestamp;
         this.text = text;
         this.userId = userId;
-        this.tag = tag;
     }
 }

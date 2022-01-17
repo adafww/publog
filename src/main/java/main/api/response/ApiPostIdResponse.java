@@ -23,6 +23,6 @@ public class ApiPostIdResponse {
     private long commentCount;
     private int viewCount;
     private List<CommentPostDto> comments;
-    private HashSet<String> tags;
+    private List<String> tags;
 
 }

@@ -24,7 +24,7 @@ public class Post {
     @JoinColumn(name = "moderator_id", insertable = false, updatable = false)
     private User Moderator;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name="user_id",  referencedColumnName = "id", nullable=false)
     private User user;
     @Column(nullable = false)
     private Date time;
@@ -34,4 +34,17 @@ public class Post {
     private String text;
     @Column(name = "view_count", nullable = false)
     private int viewCount;
+
+    public Post(boolean isActive, ModerationStatusType moderationStatusType, User user, Date time, String title, String text) {
+        this.isActive = isActive;
+        this.moderationStatusType = moderationStatusType;
+        this.user = user;
+        this.time = time;
+        this.title = title;
+        this.text = text;
+    }
+
+    public Post() {
+
+    }
 }

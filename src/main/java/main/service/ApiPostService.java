@@ -9,6 +9,7 @@ import main.dto.PostDto;
 import main.dto.PostForDtoRepository;
 import main.repository.PostCommentRepository;
 import main.repository.PostRepository;
+import main.repository.Tag2PostRepository;
 import main.repository.UserRepository;
 import org.jsoup.Jsoup;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +28,7 @@ public class ApiPostService {
     private final PostRepository postRepo;
     private final UserRepository userRepo;
     private final PostCommentRepository postCommentRepo;
-    private final LoginService loginService;
+    private final Tag2PostRepository tag2PostRepo;
 
     public ApiPostResponse getApiPostSearch(int offset, int limit, String query){
 
@@ -46,7 +47,6 @@ public class ApiPostService {
         PostForDtoRepository postDtoIterable = postRepo.findPostId(id).stream().findFirst().get();
         List<CommentForPostForDto> comPostForDto = postCommentRepo.findPostCommentById(id);
         List<CommentPostDto> commentPostDtoList = new ArrayList<>();
-        HashSet<String> stringHashSet = new HashSet<>();
         CommentPostDto commentPostDto;
 
         //view count
@@ -62,7 +62,6 @@ public class ApiPostService {
             commentPostDto.setText(Jsoup.parse(postComment.getText()).text());
             commentPostDto.setUser(userRepo.findByIdWithPhoto(postComment.getUserId()).stream().findFirst().get());
             commentPostDtoList.add(commentPostDto);
-            stringHashSet.add(postComment.getTag());
         }
 
         apiPostIdResponse.setId(postDtoIterable.getId());
@@ -75,7 +74,7 @@ public class ApiPostService {
         apiPostIdResponse.setCommentCount(postDtoIterable.getCommentCount());
         apiPostIdResponse.setViewCount(postDtoIterable.getViewCount());
         apiPostIdResponse.setComments(commentPostDtoList);
-        apiPostIdResponse.setTags(stringHashSet);
+        apiPostIdResponse.setTags(tag2PostRepo.getTags(id));
 
         return apiPostIdResponse;
     }

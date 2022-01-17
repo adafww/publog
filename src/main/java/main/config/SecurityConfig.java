@@ -49,8 +49,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .logout()
                 .logoutSuccessUrl("/login");
-                //.logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout"))
-                //.logoutSuccessUrl("/login");
     }
 
     @Bean

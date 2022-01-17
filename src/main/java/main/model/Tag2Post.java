@@ -14,9 +14,18 @@ public class Tag2Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @OneToOne
-    @JoinColumn(name = "post_id", insertable = false, updatable = false, nullable = false)
+    @JoinColumn(name="post_id",  referencedColumnName = "id", nullable=false)
     private Post postId;
     @ManyToOne
-    @JoinColumn(name = "tag_id", insertable = false, updatable = false, nullable = false)
+    @JoinColumn(name = "tag_id", referencedColumnName = "id", nullable = false)
     private Tag tagID;
+
+    public Tag2Post(Post postId, Tag tagID) {
+        this.postId = postId;
+        this.tagID = tagID;
+    }
+
+    public Tag2Post() {
+
+    }
 }

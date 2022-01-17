@@ -3,6 +3,7 @@ package main.repository;
 import main.dto.PostCalendarDtoRepository;
 import main.dto.PostForDtoRepository;
 import main.model.Post;
+import main.model.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,10 +13,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends CrudRepository<Post, Integer> {
+
+    Post findByTitle(String title);
 
     @Query("select " +
             "new main.dto.PostForDtoRepository(p.id, p.time, p.user.id, p.title, p.text, " +
@@ -131,9 +136,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "left join PostVote v on p.id = v.post.id " +
             "left join PostComment c on p.id = c.postId.id " +
             "left join Tag2Post t on p.id = t.postId.id " +
-            "where p.moderationStatusType='ACCEPTED' " +
-            "and p.isActive = true " +
-            "and p.id = :id " +
+            "where p.id = :id " +
             "group by p order by count (p.time) DESC")
     List<PostForDtoRepository> findPostId(@Param("id") int id);
 
@@ -210,4 +213,11 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "where p.id = :postId " +
             "and u.email like :email")
     boolean isAuthor(@Param("postId") int postId, @Param("email") String email);
+
+    @Modifying
+    @Transactional
+    @Query("update Post p " +
+            "set p.time = :time, p.time = :time, p.isActive = :active, p.title = :title, p.text = :text, p.moderationStatusType = 'NEW' " +
+            "where p.id = :postId ")
+    void postUpdate(@Param("postId") int postId, @Param("time") Date time, @Param("active") boolean active, @Param("title") String title, @Param("text") String text);
 }
