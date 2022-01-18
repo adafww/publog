@@ -28,9 +28,9 @@ public class Post {
     private User user;
     @Column(nullable = false)
     private Date time;
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String title;
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
     @Column(name = "view_count", nullable = false)
     private int viewCount;

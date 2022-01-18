@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import main.api.response.ApiStatisticsResponse;
 import main.dto.ApiStatisticsDto;
 import main.repository.Tag2PostRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -14,13 +15,26 @@ public class ApiStatisticsService {
 
     public ApiStatisticsResponse getAll(){
 
-        ApiStatisticsDto apiStatisticsDto = tag2PostRepo.getAllStatistics();
-        System.out.println(
-                apiStatisticsDto.getDislikesCount() + " - " +
-                        apiStatisticsDto.getLikesCount() + " - " +
-                        apiStatisticsDto.getPostsCount() + " - " +
-                        apiStatisticsDto.getViewsCount() + " - " + apiStatisticsDto.getFirstPublication());
-
-        return null;
+        return get(tag2PostRepo.getAllStatistics());
     }
+
+    public ApiStatisticsResponse getMy(){
+
+        return get(tag2PostRepo.getMyStatistics(SecurityContextHolder.getContext().getAuthentication().getName()));
+    }
+
+    private ApiStatisticsResponse get(ApiStatisticsDto apiStatisticsDto){
+
+        return new ApiStatisticsResponse(
+                apiStatisticsDto.getPostsCount(),
+                apiStatisticsDto.getLikesCount(),
+                apiStatisticsDto.getDislikesCount(),
+                apiStatisticsDto.getViewsCount(),
+                Long.parseLong(
+                        Long.toString(
+                                apiStatisticsDto.getFirstPublication().getTime()).substring(
+                                0, Long.toString(apiStatisticsDto.getFirstPublication().getTime()).length() - 3))
+        );
+    }
+
 }

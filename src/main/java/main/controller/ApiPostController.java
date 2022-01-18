@@ -5,6 +5,8 @@ import main.api.request.CommentRequest;
 import main.api.request.PostRequest;
 import main.api.request.PostVotesRequest;
 import main.api.response.*;
+import main.model.GlobalSettings;
+import main.repository.GlobalSettingsRepository;
 import main.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ public class ApiPostController {
     private final CommentService commentService;
     private final PostVotesService postVotesService;
     private final ApiStatisticsService apiStatisticsService;
+
+    private final GlobalSettingsRepository globalSettingsRepo;
 
     @GetMapping(value = "/api/post", params = {"offset", "limit", "mode"})
     public ResponseEntity<ApiPostResponse> postInfo(@RequestParam(defaultValue = "0", required = false) int offset,
@@ -112,8 +116,18 @@ public class ApiPostController {
 
     @GetMapping("/api/statistics/all")
     public ResponseEntity<ApiStatisticsResponse> getAllStatistics(){
-        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+        if(globalSettingsRepo.statisticsIsAccepted()
+                || SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
             return new ResponseEntity<>(apiStatisticsService.getAll(), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping("/api/statistics/my")
+    public ResponseEntity<ApiStatisticsResponse> getMyStatistics(){
+        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+            return new ResponseEntity<>(apiStatisticsService.getMy(), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

@@ -28,7 +28,7 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
     boolean existsByName(@Param("name") String name);
 
     @Query("select t from Tag t where t.name = :name")
-    List<Tag> findByName(@Param("name") String name);
+    Tag findByName(@Param("name") String name);
 
     @Query("select t.name " +
             "from Tag t " +

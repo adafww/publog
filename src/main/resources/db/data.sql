@@ -16,7 +16,7 @@ INSERT INTO captcha_codes (time, code, secret_code) VALUES ('2021-12-06', 'sad1'
                                                            ('2021-12-07', 'sad1sad1123s', 'ASHD35sad11dsa'),
                                                            ('2021-12-07', 'sad1ds11', 'JHGASDk113sshhasd'),
                                                            ('2021-12-07', 'sadsaasdd1', 'sadjh332');
-INSERT INTO global_settings (code, name, value) VALUES ('MULTIUSER_MODE', 'Многопользовательский режим ', 'NO'),
+INSERT INTO global_settings (code, name, value) VALUES ('MULTIUSER_MODE', 'Многопользовательский режим ', 'YES'),
                                                        ('POST_PREMODERATION', 'Премодерация постов ', 'YES'),
                                                        ('STATISTICS_IS_PUBLIC ', 'Показывать всем статистику блога', 'YES');
 INSERT INTO posts (is_active, text, time, title, moderation_status, view_count, moderator_id, user_id) VALUES (1, 'some text 1', '2021-10-01', 'some title 1', 'ACCEPTED', 1, 1, 1),

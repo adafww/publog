@@ -26,7 +26,7 @@ public class PostComment {
     private User userId;
     @Column(nullable = false)
     private Date time;
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
 
     public PostComment(PostComment parentId, Post postId, User userId, Date time, String text) {

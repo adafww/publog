@@ -11,9 +11,7 @@ import main.repository.PostRepository;
 import main.repository.Tag2PostRepository;
 import main.repository.TagRepository;
 import main.repository.UserRepository;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Hashtable;
@@ -68,20 +66,18 @@ public class CreatePostService {
     }
 
     public void savePost(PostRequest request){
-        User user = userRepo.findByEmail(
-                SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(
-                () -> new UsernameNotFoundException(SecurityContextHolder.getContext().getAuthentication().getName()));
-        postRepo.save(
+
+        User user = userRepo.findByName(SecurityContextHolder.getContext().getAuthentication().getName());
+        Post post = postRepo.save(
                 new Post(
                         request.getActive() == 1,
                         ModerationStatusType.NEW,
                         user,
-                        new Date(Long.parseLong(String.valueOf(request.getTimestamp()) + "000")),
+                        new Date(Long.parseLong(request.getTimestamp() + "000")),
                         request.getTitle(),
                         request.getText()
                 ));
-
-        saveTags(request);
+        saveTags(request, post);
     }
 
     private Hashtable<String, String> errors(PostRequest request){
@@ -99,22 +95,19 @@ public class CreatePostService {
         return errors;
     }
 
-    public void saveTags(PostRequest request){
+    public void saveTags(PostRequest request, Post post){
 
-        Post post = postRepo.findByTitle(request.getTitle());
         for (String str : request.getTags()){
             if (!tagRepo.existsByName(str)) {
                 int id = tagRepo.save(new Tag(str)).getId();
                 tag2PostRepo.save(new Tag2Post(post, new Tag(id, str)));
             }else {
-                tag2PostRepo.save(new Tag2Post(post, tagRepo.findByName(str).get(0)));
+                tag2PostRepo.saveByPostAndTagName(post.getId(), str);
             }
         }
     }
 
     public void updateTags(PostRequest request, int id){
-
-        Post post = postRepo.findByTitle(request.getTitle());
 
         List<String> oldTagList = tagRepo.tagsByPostId(id);
         List<String> newTagList = request.getTags();
@@ -131,16 +124,16 @@ public class CreatePostService {
 
         for (String str : saveTagList){
             if(!tagRepo.existsByName(str)){
-                tag2PostRepo.save(new Tag2Post(post, tagRepo.save(new Tag(str))));
+                tag2PostRepo.saveByPostAndTagName(id, tagRepo.save(new Tag(str)).getName());
             }else {
-                tag2PostRepo.save(new Tag2Post(post, tagRepo.findByName(str).get(0)));
+                tag2PostRepo.saveByPostAndTagName(id, str);
             }
         }
 
         for(String str : delTagList){
             tag2PostRepo.delete(tag2PostRepo.findByName(id, str).get(0));
             if(tagRepo.tagsByName(str) == 0){
-                tagRepo.delete(tagRepo.findByName(str).get(0));
+                tagRepo.delete(tagRepo.findByName(str));
             }
         }
     }
