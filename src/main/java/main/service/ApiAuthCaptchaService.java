@@ -28,8 +28,9 @@ public class ApiAuthCaptchaService {
     private final long HOUR_UTC = 3_600_000;
 
         public ApiAuthCaptchaResponse getApiAuthCaptcha() {
+        HashCodeGenerator hashCodeGenerator = new HashCodeGenerator();
 
-        String captchaCode = genRandCode(4, 5);
+        String captchaCode = hashCodeGenerator.generate(4, 5);
         ApiAuthCaptchaResponse apiAuthCaptchaResponse = new ApiAuthCaptchaResponse();
         Random rnd = new Random();
         Cage cage = new Cage();
@@ -50,7 +51,7 @@ public class ApiAuthCaptchaService {
                 rnd)
                 .draw(captchaCode);
         String encodedString =  "data:image/png;base64, " + Base64.getEncoder().encodeToString(bytes);
-        String secretCode = genRandCode(15, 25);
+        String secretCode = hashCodeGenerator.generate(15, 25);
         apiAuthCaptchaResponse.setSecret(secretCode);
         apiAuthCaptchaResponse.setImage(encodedString);
         Date date = Date.from(Instant.now());
@@ -63,25 +64,5 @@ public class ApiAuthCaptchaService {
     private void delCaptchaForOneHour(){
 
         codeRepository.deleteByDate(new Date(System.currentTimeMillis() - HOUR_UTC));
-    }
-
-    private String genRandCode(int minimumLength, int maximumLength) {
-
-        int randomLength = minimumLength + (int)(Math.random() * maximumLength);
-        String[] charCategories = new String[] {
-                "abcdefghijklmnopqrstuvwxyz",
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                "0123456789"
-        };
-        StringBuilder code = new StringBuilder(randomLength);
-        Random random = new Random(System.nanoTime());
-
-        for (int i = 0; i < randomLength; i++) {
-            String charCategory = charCategories[random.nextInt(charCategories.length)];
-            int position = random.nextInt(charCategory.length());
-            code.append(charCategory.charAt(position));
-        }
-
-        return new String(code);
     }
 }
