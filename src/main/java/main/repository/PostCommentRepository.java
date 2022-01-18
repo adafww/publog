@@ -2,11 +2,14 @@ package main.repository;
 
 import main.dto.CommentForPostForDto;
 import main.model.PostComment;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -25,8 +28,22 @@ public interface PostCommentRepository extends CrudRepository<PostComment, Integ
             "where pc.postId.id = :id")
     main.model.Post findPostById(@Param("id") int id);
 
-    @Query("select pc " +
-            "from PostComment pc " +
-            "where pc.id = :id")
-    PostComment findById(@Param("id") int id);
+    @Modifying
+    @Transactional
+    @Query(value = "insert into " +
+            "lib.post_comments(text, time, post_id, user_id) " +
+            "VALUE(:text, :time, :postId, :userId)",
+            nativeQuery = true)
+    void saveCommentPost(@Param("postId") int postId, @Param("userId") int userId, @Param("time") Date time, @Param("text") String text);
+
+    @Modifying
+    @Transactional
+    @Query(value = "insert into " +
+            "lib.post_comments(text, time, parent_id, post_id, user_id) " +
+            "VALUE(:text, :time, :parentId, :postId, :userId)",
+            nativeQuery = true)
+    void saveParentCommentPost(@Param("parentId") int parentId, @Param("postId") int postId, @Param("userId") int userId, @Param("time") Date time, @Param("text") String text);
+
+    @Query("select p.id from PostComment p where p.time = :time and p.text like :text")
+    int id(@Param("time") Date time, @Param("text") String text);
 }

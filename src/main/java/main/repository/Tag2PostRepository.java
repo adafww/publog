@@ -1,5 +1,7 @@
 package main.repository;
 
+import main.api.response.ApiStatisticsResponse;
+import main.dto.ApiStatisticsDto;
 import main.model.Tag;
 import main.model.Tag2Post;
 import org.springframework.data.jpa.repository.Modifying;
@@ -41,4 +43,15 @@ public interface Tag2PostRepository extends CrudRepository<Tag2Post, Integer> {
             "left join Tag t on tg.tagID.id = t.id " +
             "where tg.postId.id = :id")
     List<String> getTags(@Param("id") int id);
+
+    @Query("select new main.dto.ApiStatisticsDto(" +
+            "(select count (p) from p), " +
+            "(select count (pv) from pv where pv.value = true), " +
+            "(select count (pv) from pv where pv.value = false), " +
+            "(select sum (p.viewCount) from p), " +
+            "(min(p.time))) " +
+            "from Tag2Post t2p " +
+            "left join Post p on t2p.postId.id = p.id " +
+            "left join PostVote pv on p.id = pv.post.id ")
+    ApiStatisticsDto getAllStatistics();
 }

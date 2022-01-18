@@ -24,31 +24,27 @@ public class CommentService {
 
     public CommentAbstractResponse getCommentOk(CommentRequest request){
 
-        User user = userRepo.findByName(SecurityContextHolder.getContext().getAuthentication().getName());
-        int id = -1;
+        int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Date date = new Date();
 
         if(request.getParentId() == null){
 
-            id = postCommentRepo.save(new PostComment(
-                    postCommentRepo.findPostById(request.getPostId()),
-                    user,
-                    new Date(),
-                    request.getText())
-            ).getId();
-
+            postCommentRepo.saveCommentPost(
+                    request.getPostId(),
+                    userId,
+                    date,
+                    request.getText());
         }else {
 
-            id = postCommentRepo.save(new PostComment(
-                    postCommentRepo.findById(Integer.parseInt(request.getParentId())),
-                    postCommentRepo.findPostById(request.getPostId()),
-                    user,
-                    new Date(),
-                    request.getText())
-            ).getId();
-
+            postCommentRepo.saveParentCommentPost(
+                    Integer.parseInt(request.getParentId()),
+                    request.getPostId(),
+                    userId,
+                    date,
+                    request.getText());
         }
 
-        return new CommentOkResponse(id);
+        return new CommentOkResponse(postCommentRepo.id(date, request.getText()));
     }
 
     public CommentAbstractResponse getCommentFalse(){

@@ -5,7 +5,6 @@ import main.api.request.CommentRequest;
 import main.api.request.PostRequest;
 import main.api.request.PostVotesRequest;
 import main.api.response.*;
-import main.model.Role;
 import main.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +21,7 @@ public class ApiPostController {
     private final CreatePostService createPostService;
     private final CommentService commentService;
     private final PostVotesService postVotesService;
+    private final ApiStatisticsService apiStatisticsService;
 
     @GetMapping(value = "/api/post", params = {"offset", "limit", "mode"})
     public ResponseEntity<ApiPostResponse> postInfo(@RequestParam(defaultValue = "0", required = false) int offset,
@@ -105,6 +105,15 @@ public class ApiPostController {
     public ResponseEntity<PostVotesResponse> dislike(@RequestBody PostVotesRequest request){
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
             return new ResponseEntity<>(postVotesService.getDislike(request.getPostId()), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping("/api/statistics/all")
+    public ResponseEntity<ApiStatisticsResponse> getAllStatistics(){
+        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+            return new ResponseEntity<>(apiStatisticsService.getAll(), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
