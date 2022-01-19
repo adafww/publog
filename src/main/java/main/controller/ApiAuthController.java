@@ -6,22 +6,15 @@ import main.api.request.RegFormRequest;
 import main.service.ApiAuthCaptchaService;
 import main.service.ApiAuthRegisterService;
 import main.service.LoginService;
-import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -74,10 +67,4 @@ public class ApiAuthController {
         }
         return new ResponseEntity<>(new LogoutResponse(), HttpStatus.OK);
     }
-
-   /* @PostMapping("/api/image")
-    public ResponseEntity<ImageResponse> uploadImage(@RequestPart MultipartFile image){
-        System.out.println(image.isEmpty());
-        return new ResponseEntity<>(new ImageResponse(), HttpStatus.OK);
-    }*/
 }

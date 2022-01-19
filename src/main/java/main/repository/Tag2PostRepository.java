@@ -14,21 +14,6 @@ import java.util.List;
 @Repository
 public interface Tag2PostRepository extends CrudRepository<Tag2Post, Integer> {
 
-    @Query("select " +
-            "case when count (t) > 0 then true else false end " +
-            "from Tag2Post t " +
-            "left join Tag tg on t.tagID.id = tg.id " +
-            "where t.tagID.name like :tagName " +
-            "and t.postId.id = :postId")
-    boolean existsByTagIDAndPostId(@Param("postId") int postId, @Param("tagName") String tagName);
-
-    @Query("select " +
-            "case when count (t) > 0 then true else false end " +
-            "from Tag2Post t " +
-            "left join Tag tg on t.tagID.id = tg.id " +
-            "where t.tagID.name = :tagName")
-    boolean existsByTagID(@Param("tagName") String tagName);
-
     @Query("select t " +
             "from Tag2Post t " +
             "left join Tag tg on t.tagID.id = tg.id " +
