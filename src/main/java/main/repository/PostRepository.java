@@ -2,6 +2,7 @@ package main.repository;
 
 import main.dto.PostCalendarDtoRepository;
 import main.dto.PostForDtoRepository;
+import main.model.ModerationStatusType;
 import main.model.Post;
 import main.model.User;
 import org.springframework.data.domain.PageRequest;
@@ -217,7 +218,63 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     @Modifying
     @Transactional
     @Query("update Post p " +
-            "set p.time = :time, p.time = :time, p.isActive = :active, p.title = :title, p.text = :text, p.moderationStatusType = 'NEW' " +
+            "set p.time = :time, p.isActive = :active, p.title = :title, p.text = :text, p.moderationStatusType = 'NEW' " +
             "where p.id = :postId ")
-    void postUpdate(@Param("postId") int postId, @Param("time") Date time, @Param("active") boolean active, @Param("title") String title, @Param("text") String text);
+    void postUpdate(@Param("postId") int postId,
+                    @Param("time") Date time,
+                    @Param("active") boolean active,
+                    @Param("title") String title,
+                    @Param("text") String text);
+
+    @Modifying
+    @Transactional
+    @Query("update Post p " +
+            "set " +
+            "p.Moderator = (select m from User m where m.email like :modEmail), " +
+            "p.time = :time, " +
+            "p.isActive = :active, " +
+            "p.title = :title, " +
+            "p.text = :text, " +
+            "p.moderationStatusType = 'NEW' " +
+            "where p.id = :postId ")
+    void postModUpdate(@Param("modEmail") String modEmail,
+                    @Param("postId") int postId,
+                    @Param("time") Date time,
+                    @Param("active") boolean active,
+                    @Param("title") String title,
+                    @Param("text") String text);
+
+    @Query("select " +
+            "new main.dto.PostForDtoRepository(p.id, p.time, p.user.id, p.title, p.text, " +
+            "(select count(v) from v where v.value = true and v.post.id = p.id), " +
+            "(select count(v) from v where v.value = false and v.post.id = p.id), " +
+            "(select count(c) from c where c.postId.id = p.id), p.viewCount) " +
+            "from Post p " +
+            "left join PostVote v on p.id = v.post.id " +
+            "left join PostComment c on p.id = c.postId.id " +
+            "where p.moderationStatusType='NEW' " +
+            "group by p order by count (p.time) DESC")
+    List<PostForDtoRepository> findNewActivePosts();
+
+    @Query("select " +
+            "new main.dto.PostForDtoRepository(p.id, p.time, p.user.id, p.title, p.text, " +
+            "(select count(v) from v where v.value = true and v.post.id = p.id), " +
+            "(select count(v) from v where v.value = false and v.post.id = p.id), " +
+            "(select count(c) from c where c.postId.id = p.id), p.viewCount) " +
+            "from Post p " +
+            "left join PostVote v on p.id = v.post.id " +
+            "left join PostComment c on p.id = c.postId.id " +
+            "left join User u on p.Moderator.id = u.id " +
+            "where p.moderationStatusType = :status " +
+            "and u.email like :email " +
+            "group by p order by count (p.time) DESC")
+    List<PostForDtoRepository> findModerationPosts(@Param("status") ModerationStatusType status, @Param("email") String email);
+
+    @Modifying
+    @Transactional
+    @Query("update Post p " +
+            "set " +
+            "p.moderationStatusType = :status " +
+            "where p.id = :postId ")
+    void moderationStatus(@Param("postId") int postId,  @Param("status") ModerationStatusType status);
 }

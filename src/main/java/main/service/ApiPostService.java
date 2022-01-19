@@ -1,6 +1,7 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
+import main.api.request.ModerationRequest;
 import main.api.request.PostRequest;
 import main.api.response.*;
 import main.dto.*;
@@ -25,6 +26,36 @@ public class ApiPostService {
     private final Tag2PostRepository tag2PostRepo;
     private final TagRepository tagRepo;
 
+    public ApiAuthRegisterOkResponse moderationPosts(ModerationRequest request){
+        if(request.getDecision().equals("accept")){
+            postRepo.moderationStatus(request.getPostId(), ModerationStatusType.ACCEPTED);
+        }else if(request.getDecision().equals("decline")){
+            postRepo.moderationStatus(request.getPostId(), ModerationStatusType.DECLINED);
+        }
+        return new ApiAuthRegisterOkResponse();
+    }
+    public ApiPostResponse getModerationPosts(String status){
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        List<PostForDtoRepository> postForDtoRepositoryList = null;
+
+        if(status.equals("new")){
+            postForDtoRepositoryList = postRepo.findNewActivePosts();
+        }else if(status.equals("declined")){
+            postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.DECLINED, email);
+        }else if(status.equals("accepted")){
+            postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.ACCEPTED, email);
+        }
+
+        ApiPostResponse apiPostResponse = new ApiPostResponse();
+        assert postForDtoRepositoryList != null;
+        apiPostResponse.setCount(postForDtoRepositoryList.size());
+        apiPostResponse.setPosts(postDtoList(postForDtoRepositoryList));
+
+        return apiPostResponse;
+    }
+
     public ApiPostResponse getApiPostMyResponse(int offset, int limit, String email, String status){
 
         List<PostForDtoRepository> postForDtoRepositoryList = null;
@@ -40,6 +71,7 @@ public class ApiPostService {
         }
 
         ApiPostResponse apiPostResponse = new ApiPostResponse();
+        assert postForDtoRepositoryList != null;
         apiPostResponse.setCount(postForDtoRepositoryList.size());
         apiPostResponse.setPosts(postDtoList(postForDtoRepositoryList));
 
@@ -138,7 +170,7 @@ public class ApiPostService {
         return apiPostResponse;
     }
 
-    public List<PostDto> postDtoList(List<PostForDtoRepository> listDto){
+    private List<PostDto> postDtoList(List<PostForDtoRepository> listDto){
 
         List<PostDto> dtoFinal = new ArrayList<>();
         PostDto dto;
@@ -175,25 +207,39 @@ public class ApiPostService {
         }
     }
 
-    public CreatePostAbstractResponse editPost(PostRequest request, int id){
+    public CreatePostAbstractResponse editPost(PostRequest request, int postId){
 
-        if(
-                SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2
-                        || postRepo.isAuthor(id, SecurityContextHolder.getContext().getAuthentication().getName())){
+        int userStatus = SecurityContextHolder.getContext().getAuthentication().getAuthorities().size();
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if(userStatus == 2 || postRepo.isAuthor(postId, userName)){
 
             Hashtable<String, String> errors = errors(request);
 
             if(errors.size() != 0){
                 return new CreatePostFailResponse(errors);
             }else {
-                postRepo.postUpdate(
-                        id,
-                        new Date(Long.parseLong(String.valueOf(request.getTimestamp()) + "000")),
-                        request.getActive() == 1,
-                        request.getTitle(),
-                        request.getText()
-                );
-                updateTags(request, id);
+                if(userStatus == 2){
+
+                    postRepo.postModUpdate(
+                            userName,
+                            postId,
+                            new Date(Long.parseLong(request.getTimestamp() + "000")),
+                            request.getActive() == 1,
+                            request.getTitle(),
+                            request.getText()
+                    );
+                }else {
+
+                    postRepo.postUpdate(
+                            postId,
+                            new Date(Long.parseLong(request.getTimestamp() + "000")),
+                            request.getActive() == 1,
+                            request.getTitle(),
+                            request.getText()
+                    );
+                }
+                updateTags(request, postId);
                 return new CreatePostSuccessResponse();
             }
         }else {

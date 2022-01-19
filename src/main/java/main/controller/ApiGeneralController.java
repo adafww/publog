@@ -2,6 +2,7 @@ package main.controller;
 
 import lombok.RequiredArgsConstructor;
 import main.api.request.CommentRequest;
+import main.api.request.ModerationRequest;
 import main.api.response.*;
 import main.repository.GlobalSettingsRepository;
 import main.service.*;
@@ -20,6 +21,7 @@ public class ApiGeneralController {
     private final ApiCalendarService apiCalendarService;
     private final CommentService commentService;
     private final ApiStatisticsService apiStatisticsService;
+    private final ApiPostService apiPostService;
 
     private final InitResponse initResponse;
 
@@ -76,6 +78,15 @@ public class ApiGeneralController {
             return new ResponseEntity<>(apiStatisticsService.getMy(), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping(value = "/moderation")
+    public ResponseEntity<ApiAuthRegisterOkResponse> getModerationRequest(@RequestBody ModerationRequest request){
+        if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
+            return new ResponseEntity<>(apiPostService.moderationPosts(request), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

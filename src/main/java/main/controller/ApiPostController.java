@@ -1,6 +1,7 @@
 package main.controller;
 
 import lombok.RequiredArgsConstructor;
+import main.api.request.ModerationRequest;
 import main.api.request.PostRequest;
 import main.api.request.PostVotesRequest;
 import main.api.response.*;
@@ -83,6 +84,17 @@ public class ApiPostController {
             return new ResponseEntity<>(postVotesService.getDislike(request.getPostId()), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping(value = "/moderation", params = {"offset", "limit", "status"})
+    public ResponseEntity<ApiPostResponse> getModerationPosts(@RequestParam(defaultValue = "0", required = false) int offset,
+                                               @RequestParam(defaultValue = "10", required = false) int limit,
+                                               @RequestParam String status){
+        if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
+            return new ResponseEntity<>(apiPostService.getModerationPosts(status), HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }
