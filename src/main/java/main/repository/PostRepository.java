@@ -1,5 +1,6 @@
 package main.repository;
 
+import main.dto.ApiStatisticsDto;
 import main.dto.PostCalendarDtoRepository;
 import main.dto.PostForDtoRepository;
 import main.model.ModerationStatusType;

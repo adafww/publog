@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface Tag2PostRepository extends CrudRepository<Tag2Post, Integer> {
@@ -54,6 +55,6 @@ public interface Tag2PostRepository extends CrudRepository<Tag2Post, Integer> {
             "left join Post p on t2p.postId.id = p.id " +
             "left join PostVote pv on p.id = pv.post.id " +
             "left join User u on t2p.postId.user.id = u.id " +
-            "where u.email like :email")
+            "where t2p.postId.user.email like :email")
     ApiStatisticsDto getMyStatistics(@Param("email") String email);
 }

@@ -20,7 +20,4 @@ public class ApiStatisticsResponse {
         this.viewsCount = viewsCount;
         this.firstPublication = firstPublication;
     }
-
-    public ApiStatisticsResponse() {
-    }
 }

@@ -3,6 +3,7 @@ package main.service;
 import lombok.RequiredArgsConstructor;
 import main.api.response.ApiStatisticsResponse;
 import main.dto.ApiStatisticsDto;
+import main.repository.PostRepository;
 import main.repository.Tag2PostRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class ApiStatisticsService {
     }
 
     public ApiStatisticsResponse getMy(){
+
 
         return get(tag2PostRepo.getMyStatistics(SecurityContextHolder.getContext().getAuthentication().getName()));
     }
