@@ -11,8 +11,6 @@ public class HashCodeGenerator {
 
         int randomLength = (int) (Math.random() * ((maximumLength - minimumLength) + 1)) + minimumLength;
 
-        System.out.println(randomLength);
-
         String[] charCategories = new String[] {
                 "abcdefghijklmnopqrstuvwxyz",
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ",

@@ -9,3 +9,10 @@ blog.phone: +7 903 666-44-55
 blog.email: mail@mail.ru
 blog.copyright: Дмитрий Сергеев
 blog.copyrightFrom: 2005
+
+spring.mail.host: smtp.gmail.com
+spring.mail.port: 587
+spring.mail.username: t232421123@gmail.com
+spring.mail.password: _E7:aX-n52XTrje
+spring.mail.properties.mail.smtp.auth: true
+spring.mail.properties.mail.smtp.starttls.enable: true
