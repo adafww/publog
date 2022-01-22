@@ -16,17 +16,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/post")
 public class ApiPostController {
 
-    private final ApiPostService apiPostService;
+    private final PostService postService;
     private final PostVotesService postVotesService;
 
     private final PostRepository postRepo;
 
     @PostMapping()
-    public ResponseEntity<CreatePostAbstractResponse> postCreate(@RequestBody PostRequest request){
+    public ResponseEntity<ErrorResponse> postCreate(@RequestBody PostRequest request){
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(apiPostService.getCreatePost(request), HttpStatus.OK);
+            return new ResponseEntity<>(postService.getCreatePost(request), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -34,11 +34,11 @@ public class ApiPostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CreatePostAbstractResponse> postEdit(@PathVariable int id, @RequestBody PostRequest request){
+    public ResponseEntity<ErrorResponse> postEdit(@PathVariable int id, @RequestBody PostRequest request){
 
         if(postRepo.isAuthor(id, SecurityContextHolder.getContext().getAuthentication().getName())){
 
-            return new ResponseEntity<>(apiPostService.editPost(request, id), HttpStatus.OK);
+            return new ResponseEntity<>(postService.editPost(request, id), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -46,45 +46,45 @@ public class ApiPostController {
     }
 
     @GetMapping(params = {"offset", "limit", "mode"})
-    public ResponseEntity<ApiPostResponse> postInfo(@RequestParam(defaultValue = "0", required = false) int offset,
-                                                    @RequestParam(defaultValue = "10", required = false) int limit,
-                                                    @RequestParam(defaultValue = "recent", required = false) String mode){
+    public ResponseEntity<PostResponse> postInfo(@RequestParam(defaultValue = "0", required = false) int offset,
+                                                 @RequestParam(defaultValue = "10", required = false) int limit,
+                                                 @RequestParam(defaultValue = "recent", required = false) String mode){
 
-        return new ResponseEntity<>(apiPostService.getApiPostResponse(offset, limit, mode), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getApiPostResponse(offset, limit, mode), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ApiPostIdResponse> postById(@PathVariable int id){
+    public ResponseEntity<PostIdResponse> postById(@PathVariable int id){
 
-        return new ResponseEntity<>(apiPostService.getPostById(id), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = {"offset", "limit", "query"})
-    public ResponseEntity<ApiPostResponse> postSearch(@RequestParam int offset,
-                                                      @RequestParam int limit,
-                                                      @RequestParam String query){
+    public ResponseEntity<PostResponse> postSearch(@RequestParam int offset,
+                                                   @RequestParam int limit,
+                                                   @RequestParam String query){
 
-        return new ResponseEntity<>(apiPostService.getApiPostSearch(offset, limit, query), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getApiPostSearch(offset, limit, query), HttpStatus.OK);
     }
 
     @GetMapping(value = "/byDate", params = {"offset", "limit", "date"})
-    public ResponseEntity<ApiPostResponse> postByDate(@RequestParam int offset, @RequestParam int limit, @RequestParam String date){
+    public ResponseEntity<PostResponse> postByDate(@RequestParam int offset, @RequestParam int limit, @RequestParam String date){
 
-        return new ResponseEntity<>(apiPostService.getPostByDate(offset, limit, date), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPostByDate(offset, limit, date), HttpStatus.OK);
     }
 
     @GetMapping(value = "/byTag", params = {"offset", "limit", "tag"})
-    public ResponseEntity<ApiPostResponse> postByTag(@RequestParam int offset, @RequestParam int limit, @RequestParam String tag){
+    public ResponseEntity<PostResponse> postByTag(@RequestParam int offset, @RequestParam int limit, @RequestParam String tag){
 
-        return new ResponseEntity<>(apiPostService.getPostByTag(offset, limit, tag), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getPostByTag(offset, limit, tag), HttpStatus.OK);
     }
 
     @GetMapping(value = "/my", params = {"offset", "limit", "status"})
-    public ResponseEntity<ApiPostResponse> postMy(@RequestParam(defaultValue = "0", required = false) int offset,
-                                                    @RequestParam(defaultValue = "10", required = false) int limit,
-                                                    @RequestParam String status) {
+    public ResponseEntity<PostResponse> postMy(@RequestParam(defaultValue = "0", required = false) int offset,
+                                               @RequestParam(defaultValue = "10", required = false) int limit,
+                                               @RequestParam String status) {
 
-        return new ResponseEntity<>(apiPostService.getApiPostMyResponse(
+        return new ResponseEntity<>(postService.getApiPostMyResponse(
                 offset, limit,
                 SecurityContextHolder
                         .getContext()
@@ -94,7 +94,7 @@ public class ApiPostController {
     }
 
     @PostMapping("/like")
-    public ResponseEntity<PostVotesResponse> like(@RequestBody PostVotesRequest request){
+    public ResponseEntity<ErrorResponse> like(@RequestBody PostVotesRequest request){
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
@@ -106,7 +106,7 @@ public class ApiPostController {
     }
 
     @PostMapping("/dislike")
-    public ResponseEntity<PostVotesResponse> dislike(@RequestBody PostVotesRequest request){
+    public ResponseEntity<ErrorResponse> dislike(@RequestBody PostVotesRequest request){
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
@@ -118,13 +118,13 @@ public class ApiPostController {
     }
 
     @GetMapping(value = "/moderation", params = {"offset", "limit", "status"})
-    public ResponseEntity<ApiPostResponse> getModerationPosts(@RequestParam(defaultValue = "0", required = false) int offset,
-                                               @RequestParam(defaultValue = "10", required = false) int limit,
-                                               @RequestParam String status){
+    public ResponseEntity<PostResponse> getModerationPosts(@RequestParam(defaultValue = "0", required = false) int offset,
+                                                           @RequestParam(defaultValue = "10", required = false) int limit,
+                                                           @RequestParam String status){
 
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
 
-            return new ResponseEntity<>(apiPostService.getModerationPosts(offset, limit, status), HttpStatus.OK);
+            return new ResponseEntity<>(postService.getModerationPosts(offset, limit, status), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

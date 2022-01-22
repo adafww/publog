@@ -6,15 +6,12 @@ import main.api.request.PassChangerRequest;
 import main.api.request.RestoreRequest;
 import main.api.response.*;
 import main.api.request.RegFormRequest;
-import main.repository.UserRepository;
-import main.service.ApiAuthCaptchaService;
-import main.service.ApiAuthRegisterService;
+import main.service.CaptchaService;
+import main.service.RegisterService;
 import main.service.LoginService;
 import main.service.RestoreService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,38 +23,32 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.Principal;
 
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
-
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
-    private final ApiAuthCaptchaService apiAuthCaptchaService;
-    private final ApiAuthRegisterService apiAuthRegisterService;
+    private final CaptchaService captchaService;
+    private final RegisterService registerService;
     private final LoginService loginService;
     private final RestoreService restoreService;
-
-    private final UserRepository userRepo;
 
     public final JavaMailSender emailSender;
 
     @PostMapping("/password")
-    public ResponseEntity<RestoreAbsrtactResponse> changePassword(@RequestBody PassChangerRequest request){
+    public ResponseEntity<ErrorResponse> changePassword(@RequestBody PassChangerRequest request){
         return new ResponseEntity<>(restoreService.changePass(request), HttpStatus.OK);
     }
 
     @PostMapping("/restore")
-    public ResponseEntity<RestoreResponse> restore(@RequestBody RestoreRequest request) throws UnknownHostException {
-        //System.out.println(ServletUriComponentsBuilder.);
+    public ResponseEntity<ErrorResponse> restore(@RequestBody RestoreRequest request) throws UnknownHostException {
         return new ResponseEntity<>(restoreService.getRestore(request), HttpStatus.OK);
     }
 
     @GetMapping(value = "/captcha")
-    public ApiAuthCaptchaResponse captcha() throws IOException {
-        return apiAuthCaptchaService.getApiAuthCaptcha();
+    public CaptchaResponse captcha() throws IOException {
+        return captchaService.getApiAuthCaptcha();
     }
 
     @GetMapping("/check")
@@ -70,8 +61,8 @@ public class ApiAuthController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<ApiAuthRegisterAbstractResponse> register(@RequestBody RegFormRequest entity) {
-        return new ResponseEntity<>(apiAuthRegisterService.getApiAuthRegisterResponse(entity), HttpStatus.OK);
+    public ResponseEntity<ErrorResponse> register(@RequestBody RegFormRequest entity) {
+        return new ResponseEntity<>(registerService.getApiAuthRegisterResponse(entity), HttpStatus.OK);
     }
 
     @PostMapping(value = "/login")
@@ -80,12 +71,12 @@ public class ApiAuthController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<LogoutResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ErrorResponse> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
-        return new ResponseEntity<>(new LogoutResponse(), HttpStatus.OK);
+        return new ResponseEntity<>(new ErrorResponse(true), HttpStatus.OK);
     }
 }

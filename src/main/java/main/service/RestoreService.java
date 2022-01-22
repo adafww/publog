@@ -24,7 +24,7 @@ public class RestoreService {
     private final UserRepository userRepo;
     private final CaptchaCodeRepository captchaCodeRepo;
 
-    public RestoreResponse getRestore(RestoreRequest request) throws UnknownHostException {
+    public ErrorResponse getRestore(RestoreRequest request) throws UnknownHostException {
 
         if(userRepo.existsByEmail(request.getEmail())){
 
@@ -36,14 +36,14 @@ public class RestoreService {
             emailSender.send(simpleMailMessage);
             userRepo.codeUpdate(request.getEmail(), code);
 
-            return new RestoreResponse(true);
+            return new ErrorResponse(true);
         }else {
 
-            return new RestoreResponse(false);
+            return new ErrorResponse(false);
         }
     }
 
-    public RestoreAbsrtactResponse changePass(PassChangerRequest request){
+    public ErrorResponse changePass(PassChangerRequest request){
 
         Hashtable<String, String> errors = new Hashtable<>();
         boolean check = false;
@@ -70,14 +70,13 @@ public class RestoreService {
 
         if(check){
 
-            return new RestoreErrorResponse(errors);
+            return new ErrorResponse(false, errors);
         }else {
 
             userRepo.passUpdate(request.getCode(), new BCryptPasswordEncoder(12)
                     .encode(request.getPassword()));
 
-            return new RestoreResponse(true);
+            return new ErrorResponse(true);
         }
     }
-
 }

@@ -1,11 +1,7 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
-import main.api.response.PostVotesResponse;
-import main.model.Post;
-import main.model.PostVote;
-import main.model.User;
-import main.repository.PostRepository;
+import main.api.response.ErrorResponse;
 import main.repository.PostVoteRepository;
 import main.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +16,7 @@ public class PostVotesService {
     private final PostVoteRepository postVoteRepo;
     private final UserRepository userRepo;
 
-    public PostVotesResponse getLike(int postId){
+    public ErrorResponse getLike(int postId){
 
         int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -34,16 +30,16 @@ public class PostVotesService {
                 postVoteRepo.update(postId, userId, true);
             }
 
-            return new PostVotesResponse(false);
+            return new ErrorResponse(false);
         }else {
 
             postVoteRepo.insertInto(new Date(), postId, userId, true);
 
-            return new PostVotesResponse(true);
+            return new ErrorResponse(true);
         }
     }
 
-    public PostVotesResponse getDislike(int postId){
+    public ErrorResponse getDislike(int postId){
 
         int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -57,12 +53,12 @@ public class PostVotesService {
                 postVoteRepo.update(postId, userId, false);
             }
 
-            return new PostVotesResponse(false);
+            return new ErrorResponse(false);
         }else {
 
             postVoteRepo.insertInto(new Date(), postId, userId, false);
 
-            return new PostVotesResponse(true);
+            return new ErrorResponse(true);
         }
     }
 }

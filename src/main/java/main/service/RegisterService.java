@@ -1,9 +1,7 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
-import main.api.response.ApiAuthRegisterAbstractResponse;
-import main.api.response.ApiAuthRegisterBadResponse;
-import main.api.response.ApiAuthRegisterOkResponse;
+import main.api.response.ErrorResponse;
 import main.api.request.RegFormRequest;
 import main.model.User;
 import main.repository.CaptchaCodeRepository;
@@ -17,13 +15,13 @@ import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Service
-public class ApiAuthRegisterService {
+public class RegisterService {
 
 
     private final UserRepository userRepo;
     private final CaptchaCodeRepository captchaCodeRepo;
 
-    public ApiAuthRegisterAbstractResponse getApiAuthRegisterResponse (RegFormRequest regFormRequest){
+    public ErrorResponse getApiAuthRegisterResponse (RegFormRequest regFormRequest){
 
         Hashtable<String, String> errors = new Hashtable<>();
         Pattern pattern = Pattern.compile("^[А-ЯЁа-яё]+");
@@ -54,7 +52,7 @@ public class ApiAuthRegisterService {
 
         if(check){
 
-            return new ApiAuthRegisterBadResponse(errors);
+            return new ErrorResponse(false, errors);
         }else {
 
             userRepo.save(
@@ -67,7 +65,7 @@ public class ApiAuthRegisterService {
                     )
             );
 
-            return new ApiAuthRegisterOkResponse();
+            return new ErrorResponse(true);
         }
     }
 }

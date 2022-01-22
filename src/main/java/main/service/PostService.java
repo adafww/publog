@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class ApiPostService {
+public class PostService {
 
     private final PostRepository postRepo;
     private final UserRepository userRepo;
@@ -26,19 +26,21 @@ public class ApiPostService {
     private final Tag2PostRepository tag2PostRepo;
     private final TagRepository tagRepo;
 
-    public ApiAuthRegisterOkResponse moderationPosts(ModerationRequest request){
+    public ErrorResponse moderationPosts(ModerationRequest request){
+
+        String modEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(request.getDecision().equals("accept")){
 
-            postRepo.moderationStatus(request.getPostId(), ModerationStatusType.ACCEPTED);
+            postRepo.moderationStatus(modEmail, request.getPostId(), ModerationStatusType.ACCEPTED);
         }else if(request.getDecision().equals("decline")){
 
-            postRepo.moderationStatus(request.getPostId(), ModerationStatusType.DECLINED);
+            postRepo.moderationStatus(modEmail, request.getPostId(), ModerationStatusType.DECLINED);
         }
 
-        return new ApiAuthRegisterOkResponse();
+        return new ErrorResponse(true);
     }
-    public ApiPostResponse getModerationPosts(int offset, int limit, String status){
+    public PostResponse getModerationPosts(int offset, int limit, String status){
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -55,15 +57,15 @@ public class ApiPostService {
             postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.ACCEPTED, email, PageRequest.of(offset, limit));
         }
 
-        ApiPostResponse apiPostResponse = new ApiPostResponse();
+        PostResponse postResponse = new PostResponse();
         assert postForDtoRepositoryList != null;
-        apiPostResponse.setCount(postForDtoRepositoryList.size());
-        apiPostResponse.setPosts(postDtoList(postForDtoRepositoryList));
+        postResponse.setCount(postForDtoRepositoryList.size());
+        postResponse.setPosts(postDtoList(postForDtoRepositoryList));
 
-        return apiPostResponse;
+        return postResponse;
     }
 
-    public ApiPostResponse getApiPostMyResponse(int offset, int limit, String email, String status){
+    public PostResponse getApiPostMyResponse(int offset, int limit, String email, String status){
 
         List<PostForDtoRepository> postForDtoRepositoryList = null;
 
@@ -81,15 +83,15 @@ public class ApiPostService {
             postForDtoRepositoryList = postRepo.findPublishedByEmail(email, PageRequest.of(offset, limit));
         }
 
-        ApiPostResponse apiPostResponse = new ApiPostResponse();
+        PostResponse postResponse = new PostResponse();
         assert postForDtoRepositoryList != null;
-        apiPostResponse.setCount(postForDtoRepositoryList.size());
-        apiPostResponse.setPosts(postDtoList(postForDtoRepositoryList));
+        postResponse.setCount(postForDtoRepositoryList.size());
+        postResponse.setPosts(postDtoList(postForDtoRepositoryList));
 
-        return apiPostResponse;
+        return postResponse;
     }
 
-    public ApiPostResponse getApiPostResponse(int offset, int limit, String mode) {
+    public PostResponse getApiPostResponse(int offset, int limit, String mode) {
 
         List<PostForDtoRepository> postDtoIterable;
 
@@ -107,27 +109,27 @@ public class ApiPostService {
             postDtoIterable = postRepo.findRecent(PageRequest.of(offset, limit));
         }
 
-        ApiPostResponse apiPostResponse = new ApiPostResponse();
-        apiPostResponse.setCount(postDtoIterable.size());
-        apiPostResponse.setPosts(postDtoList(postDtoIterable));
+        PostResponse postResponse = new PostResponse();
+        postResponse.setCount(postDtoIterable.size());
+        postResponse.setPosts(postDtoList(postDtoIterable));
 
-        return apiPostResponse;
+        return postResponse;
     }
 
-    public ApiPostResponse getApiPostSearch(int offset, int limit, String query){
+    public PostResponse getApiPostSearch(int offset, int limit, String query){
 
         List<PostForDtoRepository> postDtoIterable = postRepo.findPostSearch("%" + query + "%", PageRequest.of(offset, limit));
-        ApiPostResponse apiPostResponse = new ApiPostResponse();
-        apiPostResponse.setCount(postDtoIterable.size());
-        apiPostResponse.setPosts(postDtoList(postDtoIterable));
+        PostResponse postResponse = new PostResponse();
+        postResponse.setCount(postDtoIterable.size());
+        postResponse.setPosts(postDtoList(postDtoIterable));
 
-        return apiPostResponse;
+        return postResponse;
     }
 
-    public ApiPostIdResponse getPostById(int id){
+    public PostIdResponse getPostById(int id){
 
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        ApiPostIdResponse apiPostIdResponse = new ApiPostIdResponse();
+        PostIdResponse postIdResponse = new PostIdResponse();
         PostForDtoRepository postDtoIterable = postRepo.findPostId(id).stream().findFirst().get();
         List<CommentForPostForDto> comPostForDto = postCommentRepo.findPostCommentById(id);
         List<CommentPostDto> commentPostDtoList = new ArrayList<>();
@@ -150,41 +152,41 @@ public class ApiPostService {
             commentPostDtoList.add(commentPostDto);
         }
 
-        apiPostIdResponse.setId(postDtoIterable.getId());
-        apiPostIdResponse.setTimestamp(Long.parseLong(Long.toString(postDtoIterable.getTimestamp().getTime()).substring(0, Long.toString(postDtoIterable.getTimestamp().getTime()).length() - 3)));
-        apiPostIdResponse.setUser(userRepo.findById(postDtoIterable.getUserId()).get(0));
-        apiPostIdResponse.setTitle(postDtoIterable.getTitle());
-        apiPostIdResponse.setText(Jsoup.parse(postDtoIterable.getAnnounce()).text());
-        apiPostIdResponse.setLikeCount(postDtoIterable.getLikeCount());
-        apiPostIdResponse.setDislikeCount(postDtoIterable.getDislikeCount());
-        apiPostIdResponse.setCommentCount(postDtoIterable.getCommentCount());
-        apiPostIdResponse.setViewCount(postDtoIterable.getViewCount());
-        apiPostIdResponse.setComments(commentPostDtoList);
-        apiPostIdResponse.setTags(tag2PostRepo.getTags(id));
+        postIdResponse.setId(postDtoIterable.getId());
+        postIdResponse.setTimestamp(Long.parseLong(Long.toString(postDtoIterable.getTimestamp().getTime()).substring(0, Long.toString(postDtoIterable.getTimestamp().getTime()).length() - 3)));
+        postIdResponse.setUser(userRepo.findById(postDtoIterable.getUserId()).get(0));
+        postIdResponse.setTitle(postDtoIterable.getTitle());
+        postIdResponse.setText(Jsoup.parse(postDtoIterable.getAnnounce()).text());
+        postIdResponse.setLikeCount(postDtoIterable.getLikeCount());
+        postIdResponse.setDislikeCount(postDtoIterable.getDislikeCount());
+        postIdResponse.setCommentCount(postDtoIterable.getCommentCount());
+        postIdResponse.setViewCount(postDtoIterable.getViewCount());
+        postIdResponse.setComments(commentPostDtoList);
+        postIdResponse.setTags(tag2PostRepo.getTags(id));
 
-        return apiPostIdResponse;
+        return postIdResponse;
     }
 
-    public ApiPostResponse getPostByTag(int offset, int limit, String tag){
+    public PostResponse getPostByTag(int offset, int limit, String tag){
 
         List<PostForDtoRepository> postDtoIterable = postRepo.findByTag(tag, PageRequest.of(offset, limit));
 
-        ApiPostResponse apiPostResponse = new ApiPostResponse();
-        apiPostResponse.setCount(postDtoIterable.size());
-        apiPostResponse.setPosts(postDtoList(postDtoIterable));
+        PostResponse postResponse = new PostResponse();
+        postResponse.setCount(postDtoIterable.size());
+        postResponse.setPosts(postDtoList(postDtoIterable));
 
-        return apiPostResponse;
+        return postResponse;
     }
 
-    public ApiPostResponse getPostByDate(int offset, int limit, String date){
+    public PostResponse getPostByDate(int offset, int limit, String date){
 
         List<PostForDtoRepository> postDtoIterable = postRepo.findByDate("%" + date + "%", PageRequest.of(offset, limit));
 
-        ApiPostResponse apiPostResponse = new ApiPostResponse();
-        apiPostResponse.setCount(postDtoIterable.size());
-        apiPostResponse.setPosts(postDtoList(postDtoIterable));
+        PostResponse postResponse = new PostResponse();
+        postResponse.setCount(postDtoIterable.size());
+        postResponse.setPosts(postDtoList(postDtoIterable));
 
-        return apiPostResponse;
+        return postResponse;
     }
 
     private List<PostDto> postDtoList(List<PostForDtoRepository> listDto){
@@ -212,21 +214,21 @@ public class ApiPostService {
         return dtoFinal;
     }
 
-    public CreatePostAbstractResponse getCreatePost(PostRequest request){
+    public ErrorResponse getCreatePost(PostRequest request){
 
         Hashtable<String, String> errors = errors(request);
 
         if(errors.size() != 0){
 
-            return new CreatePostFailResponse(errors);
+            return new ErrorResponse(false, errors);
         }else {
 
             savePost(request);
-            return new CreatePostSuccessResponse();
+            return new ErrorResponse(true);
         }
     }
 
-    public CreatePostAbstractResponse editPost(PostRequest request, int postId){
+    public ErrorResponse editPost(PostRequest request, int postId){
 
         int userStatus = SecurityContextHolder.getContext().getAuthentication().getAuthorities().size();
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -237,7 +239,7 @@ public class ApiPostService {
 
             if(errors.size() != 0){
 
-                return new CreatePostFailResponse(errors);
+                return new ErrorResponse(false, errors);
             }else {
 
                 if(userStatus == 2){
@@ -262,11 +264,11 @@ public class ApiPostService {
                 }
                 updateTags(request, postId);
 
-                return new CreatePostSuccessResponse();
+                return new ErrorResponse(true);
             }
         }else {
 
-            return new CreatePostFalseResponse();
+            return new ErrorResponse(false);
         }
     }
 

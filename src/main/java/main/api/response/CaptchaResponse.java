@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiAuthCaptchaResponse {
+public class CaptchaResponse {
 
     private String secret;
     private String image;

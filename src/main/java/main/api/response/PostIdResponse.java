@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ApiPostIdResponse {
+public class PostIdResponse {
 
     private int id;
     private long timestamp;

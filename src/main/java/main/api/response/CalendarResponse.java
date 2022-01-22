@@ -7,7 +7,7 @@ import java.util.Hashtable;
 
 @Getter
 @Setter
-public class ApiCalendarResponse {
+public class CalendarResponse {
 
     private HashSet<String> years;
     private Hashtable<String, Integer> posts;

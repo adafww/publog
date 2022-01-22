@@ -1,7 +1,7 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
-import main.api.response.ApiCalendarResponse;
+import main.api.response.CalendarResponse;
 import main.dto.PostCalendarDtoRepository;
 import main.repository.PostRepository;
 import org.springframework.data.domain.PageRequest;
@@ -11,23 +11,23 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Service
-public class ApiCalendarService {
+public class CalendarService {
 
     private final PostRepository postRepo;
 
-    public ApiCalendarResponse getCalendar(String year){
+    public CalendarResponse getCalendar(String year){
 
         return calendar(year);
     }
 
-    public ApiCalendarResponse getCalendar(){
+    public CalendarResponse getCalendar(){
 
         return calendar(new SimpleDateFormat("yyyy").format(System.currentTimeMillis()));
     }
 
-    public ApiCalendarResponse calendar(String year){
+    public CalendarResponse calendar(String year){
 
-        ApiCalendarResponse apiCalendarResponse = new ApiCalendarResponse();
+        CalendarResponse calendarResponse = new CalendarResponse();
         Hashtable<String, Integer> hashtable = new Hashtable<>();
         List<PostCalendarDtoRepository> postDtoIterable = postRepo.findDate("%" + year + "%", PageRequest.of(0, 10));
         SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
@@ -40,10 +40,10 @@ public class ApiCalendarService {
             hashtable.put(dt1.format(post.getTime()), (int) post.getCount());
         }
 
-        apiCalendarResponse.setYears(years);
-        apiCalendarResponse.setPosts(hashtable);
+        calendarResponse.setYears(years);
+        calendarResponse.setPosts(hashtable);
 
-        return apiCalendarResponse;
+        return calendarResponse;
     }
 
 }

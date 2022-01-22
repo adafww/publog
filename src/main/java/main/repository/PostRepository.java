@@ -232,9 +232,10 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     @Transactional
     @Query("update Post p " +
             "set " +
-            "p.moderationStatusType = :status " +
+            "p.moderationStatusType = :status, " +
+            "p.Moderator = (select m from User m where m.email like :modEmail)" +
             "where p.id = :postId ")
-    void moderationStatus(@Param("postId") int postId,  @Param("status") ModerationStatusType status);
+    void moderationStatus(@Param("modEmail") String modEmail, @Param("postId") int postId,  @Param("status") ModerationStatusType status);
 
     @Query("select " +
             "case when count (p) > 0 then true else false end " +

@@ -18,10 +18,10 @@ public class ApiGeneralController {
 
     private final SettingsService settingsService;
     private final TagService tagService;
-    private final ApiCalendarService apiCalendarService;
+    private final CalendarService calendarService;
     private final CommentService commentService;
     private final StatisticsService statisticsService;
-    private final ApiPostService apiPostService;
+    private final PostService postService;
 
     private final InitResponse initResponse;
 
@@ -43,17 +43,17 @@ public class ApiGeneralController {
     }
 
     @GetMapping(value = "/calendar", params = {"year"})
-    public ResponseEntity<ApiCalendarResponse> postCalendar(@RequestParam String year){
-        return new ResponseEntity<>(apiCalendarService.getCalendar(year), HttpStatus.OK);
+    public ResponseEntity<CalendarResponse> postCalendar(@RequestParam String year){
+        return new ResponseEntity<>(calendarService.getCalendar(year), HttpStatus.OK);
     }
 
     @GetMapping(value = "/calendar")
-    public ResponseEntity<ApiCalendarResponse> postCalendar(){
-        return new ResponseEntity<>(apiCalendarService.getCalendar(), HttpStatus.OK);
+    public ResponseEntity<CalendarResponse> postCalendar(){
+        return new ResponseEntity<>(calendarService.getCalendar(), HttpStatus.OK);
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<CommentAbstractResponse> getCommentResponse(@RequestBody CommentRequest request){
+    public ResponseEntity<ErrorResponse> getCommentResponse(@RequestBody CommentRequest request){
 
         if(request.getText().length() < 5){
             return new ResponseEntity<>(commentService.getCommentFalse(), HttpStatus.BAD_REQUEST);
@@ -82,9 +82,9 @@ public class ApiGeneralController {
     }
 
     @PostMapping(value = "/moderation")
-    public ResponseEntity<ApiAuthRegisterOkResponse> getModerationRequest(@RequestBody ModerationRequest request){
+    public ResponseEntity<ErrorResponse> getModerationRequest(@RequestBody ModerationRequest request){
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
-            return new ResponseEntity<>(apiPostService.moderationPosts(request), HttpStatus.OK);
+            return new ResponseEntity<>(postService.moderationPosts(request), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
