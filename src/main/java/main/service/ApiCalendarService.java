@@ -33,12 +33,16 @@ public class ApiCalendarService {
         SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dt2 = new SimpleDateFormat("yyyy");
         HashSet<String> years = new HashSet<>();
+
         for (PostCalendarDtoRepository post : postDtoIterable){
+
             years.add(dt2.format(post.getTime()));
             hashtable.put(dt1.format(post.getTime()), (int) post.getCount());
         }
+
         apiCalendarResponse.setYears(years);
         apiCalendarResponse.setPosts(hashtable);
+
         return apiCalendarResponse;
     }
 

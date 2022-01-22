@@ -19,21 +19,26 @@ public class PostVotesService {
 
     private final PostVoteRepository postVoteRepo;
     private final UserRepository userRepo;
-    private final PostRepository postRepo;
 
     public PostVotesResponse getLike(int postId){
 
         int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if(postVoteRepo.voted(postId, userId)){
+
             if(postVoteRepo.isLike(postId, userId)){
+
                 postVoteRepo.deleteByUserIdAndPostId(postId, userId);
             }else {
+
                 postVoteRepo.update(postId, userId, true);
             }
+
             return new PostVotesResponse(false);
         }else {
+
             postVoteRepo.insertInto(new Date(), postId, userId, true);
+
             return new PostVotesResponse(true);
         }
     }
@@ -43,16 +48,21 @@ public class PostVotesService {
         int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if(postVoteRepo.voted(postId, userId)){
+
             if(!postVoteRepo.isLike(postId, userId)){
+
                 postVoteRepo.deleteByUserIdAndPostId(postId, userId);
             }else {
+
                 postVoteRepo.update(postId, userId, false);
             }
+
             return new PostVotesResponse(false);
         }else {
+
             postVoteRepo.insertInto(new Date(), postId, userId, false);
+
             return new PostVotesResponse(true);
         }
     }
-
 }

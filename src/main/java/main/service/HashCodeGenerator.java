@@ -20,6 +20,7 @@ public class HashCodeGenerator {
         Random random = new Random(System.nanoTime());
 
         for (int i = 0; i < randomLength; i++) {
+
             String charCategory = charCategories[random.nextInt(charCategories.length)];
             int position = random.nextInt(charCategory.length());
             code.append(charCategory.charAt(position));
@@ -27,5 +28,4 @@ public class HashCodeGenerator {
 
         return new String(code);
     }
-
 }

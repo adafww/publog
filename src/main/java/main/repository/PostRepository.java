@@ -201,12 +201,42 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "group by p order by count (p.time) DESC")
     List<PostForDtoRepository> findPublishedByEmail(@Param("email") String email, Pageable of);
 
+    @Query("select " +
+            "new main.dto.PostForDtoRepository(p.id, p.time, p.user.id, p.title, p.text, " +
+            "(select count(v) from v where v.value = true and v.post.id = p.id), " +
+            "(select count(v) from v where v.value = false and v.post.id = p.id), " +
+            "(select count(c) from c where c.postId.id = p.id), p.viewCount) " +
+            "from Post p " +
+            "left join PostVote v on p.id = v.post.id " +
+            "left join PostComment c on p.id = c.postId.id " +
+            "where p.moderationStatusType='NEW' " +
+            "group by p order by count (p.time) DESC")
+    List<PostForDtoRepository> findNewActivePosts(Pageable of);
+
+    @Query("select " +
+            "new main.dto.PostForDtoRepository(p.id, p.time, p.user.id, p.title, p.text, " +
+            "(select count(v) from v where v.value = true and v.post.id = p.id), " +
+            "(select count(v) from v where v.value = false and v.post.id = p.id), " +
+            "(select count(c) from c where c.postId.id = p.id), p.viewCount) " +
+            "from Post p " +
+            "left join PostVote v on p.id = v.post.id " +
+            "left join PostComment c on p.id = c.postId.id " +
+            "left join User u on p.Moderator.id = u.id " +
+            "where p.moderationStatusType = :status " +
+            "and u.email like :email " +
+            "group by p order by count (p.time) DESC")
+    List<PostForDtoRepository> findModerationPosts(
+            @Param("status") ModerationStatusType status,
+            @Param("email") String email,
+            Pageable of);
+
     @Modifying
     @Transactional
     @Query("update Post p " +
-            "set p.viewCount = p.viewCount + 1 " +
+            "set " +
+            "p.moderationStatusType = :status " +
             "where p.id = :postId ")
-    void incrementViewById(@Param("postId") int postId);
+    void moderationStatus(@Param("postId") int postId,  @Param("status") ModerationStatusType status);
 
     @Query("select " +
             "case when count (p) > 0 then true else false end " +
@@ -215,6 +245,13 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "where p.id = :postId " +
             "and u.email like :email")
     boolean isAuthor(@Param("postId") int postId, @Param("email") String email);
+
+    @Modifying
+    @Transactional
+    @Query("update Post p " +
+            "set p.viewCount = p.viewCount + 1 " +
+            "where p.id = :postId ")
+    void incrementViewById(@Param("postId") int postId);
 
     @Modifying
     @Transactional
@@ -239,43 +276,24 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "p.moderationStatusType = 'NEW' " +
             "where p.id = :postId ")
     void postModUpdate(@Param("modEmail") String modEmail,
-                    @Param("postId") int postId,
-                    @Param("time") Date time,
-                    @Param("active") boolean active,
-                    @Param("title") String title,
-                    @Param("text") String text);
+                       @Param("postId") int postId,
+                       @Param("time") Date time,
+                       @Param("active") boolean active,
+                       @Param("title") String title,
+                       @Param("text") String text);
 
-    @Query("select " +
-            "new main.dto.PostForDtoRepository(p.id, p.time, p.user.id, p.title, p.text, " +
-            "(select count(v) from v where v.value = true and v.post.id = p.id), " +
-            "(select count(v) from v where v.value = false and v.post.id = p.id), " +
-            "(select count(c) from c where c.postId.id = p.id), p.viewCount) " +
-            "from Post p " +
-            "left join PostVote v on p.id = v.post.id " +
-            "left join PostComment c on p.id = c.postId.id " +
-            "where p.moderationStatusType='NEW' " +
-            "group by p order by count (p.time) DESC")
-    List<PostForDtoRepository> findNewActivePosts();
+    @Query(value = "SELECT * FROM lib.posts JOIN lib.users ON lib.posts.user_id = lib.users.id " +
+            "WHERE lib.posts.is_active = 1 AND lib.posts.moderation_status = 'ACCEPTED' ", nativeQuery = true)
+    List<Post> getAllStatistics();
 
-    @Query("select " +
-            "new main.dto.PostForDtoRepository(p.id, p.time, p.user.id, p.title, p.text, " +
-            "(select count(v) from v where v.value = true and v.post.id = p.id), " +
-            "(select count(v) from v where v.value = false and v.post.id = p.id), " +
-            "(select count(c) from c where c.postId.id = p.id), p.viewCount) " +
-            "from Post p " +
-            "left join PostVote v on p.id = v.post.id " +
-            "left join PostComment c on p.id = c.postId.id " +
-            "left join User u on p.Moderator.id = u.id " +
-            "where p.moderationStatusType = :status " +
-            "and u.email like :email " +
-            "group by p order by count (p.time) DESC")
-    List<PostForDtoRepository> findModerationPosts(@Param("status") ModerationStatusType status, @Param("email") String email);
+    @Query(value = "SELECT * FROM lib.posts JOIN lib.users ON lib.posts.user_id = lib.users.id " +
+            "WHERE lib.posts.is_active = 1 AND lib.posts.moderation_status = 'ACCEPTED' " +
+            "AND lib.users.email = :email", nativeQuery = true)
+    List<Post> getMyStatistics(@Param("email") String email);
 
-    @Modifying
-    @Transactional
-    @Query("update Post p " +
-            "set " +
-            "p.moderationStatusType = :status " +
-            "where p.id = :postId ")
-    void moderationStatus(@Param("postId") int postId,  @Param("status") ModerationStatusType status);
+    @Query("select sum (p.viewCount) from Post p")
+    int getAllViewsCount();
+
+    @Query("select sum (p.viewCount) from Post p left join User u on p.user.id = u.id where p.user.email like :email")
+    int getUsersViewsCount(@Param("email") String email);
 }

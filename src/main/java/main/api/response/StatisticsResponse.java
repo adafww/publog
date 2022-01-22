@@ -5,15 +5,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiStatisticsResponse {
+public class StatisticsResponse {
 
-    private long postsCount;
-    private long likesCount;
-    private long dislikesCount;
-    private long viewsCount;
+    private int postsCount;
+    private int likesCount;
+    private int dislikesCount;
+    private int viewsCount;
     private long firstPublication;
 
-    public ApiStatisticsResponse(long postsCount, long likesCount, long dislikesCount, long viewsCount, long firstPublication) {
+    public StatisticsResponse(int postsCount, int likesCount, int dislikesCount, int viewsCount, long firstPublication) {
         this.postsCount = postsCount;
         this.likesCount = likesCount;
         this.dislikesCount = dislikesCount;

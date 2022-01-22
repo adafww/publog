@@ -19,9 +19,7 @@ public class LoginService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
 
-    public void logout(){
-
-    }
+    public void logout(){}
 
     public LoginResponse getLoginResponse(String email, String password){
 

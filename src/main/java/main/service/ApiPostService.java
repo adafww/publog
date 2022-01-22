@@ -27,25 +27,32 @@ public class ApiPostService {
     private final TagRepository tagRepo;
 
     public ApiAuthRegisterOkResponse moderationPosts(ModerationRequest request){
+
         if(request.getDecision().equals("accept")){
+
             postRepo.moderationStatus(request.getPostId(), ModerationStatusType.ACCEPTED);
         }else if(request.getDecision().equals("decline")){
+
             postRepo.moderationStatus(request.getPostId(), ModerationStatusType.DECLINED);
         }
+
         return new ApiAuthRegisterOkResponse();
     }
-    public ApiPostResponse getModerationPosts(String status){
+    public ApiPostResponse getModerationPosts(int offset, int limit, String status){
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         List<PostForDtoRepository> postForDtoRepositoryList = null;
 
         if(status.equals("new")){
-            postForDtoRepositoryList = postRepo.findNewActivePosts();
+
+            postForDtoRepositoryList = postRepo.findNewActivePosts(PageRequest.of(offset, limit));
         }else if(status.equals("declined")){
-            postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.DECLINED, email);
+
+            postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.DECLINED, email, PageRequest.of(offset, limit));
         }else if(status.equals("accepted")){
-            postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.ACCEPTED, email);
+
+            postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.ACCEPTED, email, PageRequest.of(offset, limit));
         }
 
         ApiPostResponse apiPostResponse = new ApiPostResponse();
@@ -61,12 +68,16 @@ public class ApiPostService {
         List<PostForDtoRepository> postForDtoRepositoryList = null;
 
         if(status.equals("inactive")){
+
             postForDtoRepositoryList = postRepo.findInactiveByEmail(email, PageRequest.of(offset, limit));
         }else if(status.equals("pending")){
+
             postForDtoRepositoryList = postRepo.findPendingByEmail(email, PageRequest.of(offset, limit));
         }else if(status.equals("declined")){
+
             postForDtoRepositoryList = postRepo.findDeclinedByEmail(email, PageRequest.of(offset, limit));
         }else if(status.equals("published")) {
+
             postForDtoRepositoryList = postRepo.findPublishedByEmail(email, PageRequest.of(offset, limit));
         }
 
@@ -83,12 +94,16 @@ public class ApiPostService {
         List<PostForDtoRepository> postDtoIterable;
 
         if(mode.equals("popular")){
+
             postDtoIterable = postRepo.findPopular(PageRequest.of(offset, limit));
         }else if(mode.equals("best")){
+
             postDtoIterable = postRepo.findBest(PageRequest.of(offset, limit));
         }else if(mode.equals("early")){
+
             postDtoIterable = postRepo.findEarly(PageRequest.of(offset, limit));
         }else {
+
             postDtoIterable = postRepo.findRecent(PageRequest.of(offset, limit));
         }
 
@@ -121,10 +136,12 @@ public class ApiPostService {
         //view count
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 1
                 && !postRepo.isAuthor(id, currentUser)){
+
             postRepo.incrementViewById(id);
         }
 
         for(CommentForPostForDto postComment : comPostForDto){
+
             commentPostDto = new CommentPostDto();
             commentPostDto.setId(postComment.getId());
             commentPostDto.setTimestamp(Long.parseLong(Long.toString(postComment.getTimestamp().getTime()).substring(0, Long.toString(postComment.getTimestamp().getTime()).length() - 3)));
@@ -200,8 +217,10 @@ public class ApiPostService {
         Hashtable<String, String> errors = errors(request);
 
         if(errors.size() != 0){
+
             return new CreatePostFailResponse(errors);
         }else {
+
             savePost(request);
             return new CreatePostSuccessResponse();
         }
@@ -217,8 +236,10 @@ public class ApiPostService {
             Hashtable<String, String> errors = errors(request);
 
             if(errors.size() != 0){
+
                 return new CreatePostFailResponse(errors);
             }else {
+
                 if(userStatus == 2){
 
                     postRepo.postModUpdate(
@@ -240,9 +261,11 @@ public class ApiPostService {
                     );
                 }
                 updateTags(request, postId);
+
                 return new CreatePostSuccessResponse();
             }
         }else {
+
             return new CreatePostFalseResponse();
         }
     }
@@ -267,10 +290,12 @@ public class ApiPostService {
         Hashtable<String, String> errors = new Hashtable<>();
 
         if(request.getTitle().length() < 5){
+
             errors.put("title", "Заголовок не установлен");
         }
 
         if(request.getText().length() < 50){
+
             errors.put("text", "Текст публикации слишком короткий");
         }
 
@@ -280,10 +305,13 @@ public class ApiPostService {
     private void saveTags(PostRequest request, Post post){
 
         for (String str : request.getTags()){
+
             if (!tagRepo.existsByName(str)) {
+
                 int id = tagRepo.save(new Tag(str)).getId();
                 tag2PostRepo.save(new Tag2Post(post, new Tag(id, str)));
             }else {
+
                 tag2PostRepo.saveByPostAndTagName(post.getId(), str);
             }
         }
@@ -305,16 +333,21 @@ public class ApiPostService {
                 .collect(Collectors.toList());
 
         for (String str : saveTagList){
+
             if(!tagRepo.existsByName(str)){
+
                 tag2PostRepo.saveByPostAndTagName(id, tagRepo.save(new Tag(str)).getName());
             }else {
+
                 tag2PostRepo.saveByPostAndTagName(id, str);
             }
         }
 
         for(String str : delTagList){
+
             tag2PostRepo.delete(tag2PostRepo.findByName(id, str).get(0));
             if(tagRepo.tagsByName(str) == 0){
+
                 tagRepo.delete(tagRepo.findByName(str));
             }
         }

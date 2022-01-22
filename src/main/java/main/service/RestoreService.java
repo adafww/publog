@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import main.api.request.PassChangerRequest;
 import main.api.request.RestoreRequest;
 import main.api.response.*;
-import main.model.User;
 import main.repository.CaptchaCodeRepository;
 import main.repository.UserRepository;
 import org.springframework.mail.SimpleMailMessage;
@@ -28,6 +27,7 @@ public class RestoreService {
     public RestoreResponse getRestore(RestoreRequest request) throws UnknownHostException {
 
         if(userRepo.existsByEmail(request.getEmail())){
+
             String url = ServletUriComponentsBuilder.fromCurrentRequest().toUriString();
             String code = new HashCodeGenerator().generate(35, 45);
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -35,8 +35,10 @@ public class RestoreService {
             simpleMailMessage.setText(url.substring(0, url.length() - 16) + "login/change-password/" + code);
             emailSender.send(simpleMailMessage);
             userRepo.codeUpdate(request.getEmail(), code);
+
             return new RestoreResponse(true);
         }else {
+
             return new RestoreResponse(false);
         }
     }
@@ -47,6 +49,7 @@ public class RestoreService {
         boolean check = false;
 
         if(!userRepo.existsByCode("%" + request.getCode() + "%")){
+
             errors.put("code", "Ссылка для восстановления пароля устарела.\n" +
                     " <a href=" +
                     " \"/auth/restore\">Запросить ссылку снова</a>");
@@ -54,11 +57,13 @@ public class RestoreService {
         }
 
         if(request.getPassword().length() < 6){
+
             errors.put("password", "Пароль короче 6-ти символов");
             check = true;
         }
 
         if(!captchaCodeRepo.existsByCaptcha(request.getCaptcha())){
+
             errors.put("captcha", "Код с картинки введён неверно");
             check = true;
         }
@@ -67,8 +72,10 @@ public class RestoreService {
 
             return new RestoreErrorResponse(errors);
         }else {
+
             userRepo.passUpdate(request.getCode(), new BCryptPasswordEncoder(12)
                     .encode(request.getPassword()));
+
             return new RestoreResponse(true);
         }
     }

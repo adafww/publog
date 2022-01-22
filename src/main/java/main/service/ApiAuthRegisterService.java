@@ -30,20 +30,24 @@ public class ApiAuthRegisterService {
         boolean check = false;
 
         if(userRepo.existsByEmail("%" + regFormRequest.getEEmail() + "%")){
+
             errors.put("email", "Этот e-mail уже зарегистрирован");
             check = true;
         }
         if(!pattern.matcher(regFormRequest.getName()).matches()){
+
             errors.put("name", "Имя указано неверно");
             check = true;
         }
 
         if(regFormRequest.getPassword().length() < 6){
+
             errors.put("password", "Пароль короче 6-ти символов");
             check = true;
         }
 
         if(!captchaCodeRepo.existsByCaptcha(regFormRequest.getCaptcha())){
+
             errors.put("captcha", "Код с картинки введён неверно");
             check = true;
         }
@@ -62,6 +66,7 @@ public class ApiAuthRegisterService {
                                     .encode(regFormRequest.getPassword())
                     )
             );
+
             return new ApiAuthRegisterOkResponse();
         }
     }

@@ -18,26 +18,32 @@ public class TagService {
     private final Tag2PostRepository tag2PostRepo;
 
     public TagResponse getTagResponse(){
+
         long length = tag2PostRepo.count();
         boolean swch = true;
         double k = 0;
         ArrayList<TagDto> dtoList = new ArrayList<>();
         TagResponse tagResponse = new TagResponse();
         TagDto dto;
+
         for(TagForDtoRepository tag : tagRepo.findAllForDto()){
+
             dto = new TagDto();
             if(swch){
+
                 k = 1 / ((double) (tag.getCount()) / length);
                 swch = false;
                 dto.setName(tag.getName());
                 dto.setWeight(1.0);
             }else {
+
                 dto.setName(tag.getName());
                 dto.setWeight(Math.round(k * ((double) (tag.getCount()) / length) * 100.0) / 100.0);
             }
             dtoList.add(dto);
         }
         tagResponse.setTags(dtoList);
+
         return tagResponse;
     }
 }

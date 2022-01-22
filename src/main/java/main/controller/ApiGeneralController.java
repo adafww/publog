@@ -20,7 +20,7 @@ public class ApiGeneralController {
     private final TagService tagService;
     private final ApiCalendarService apiCalendarService;
     private final CommentService commentService;
-    private final ApiStatisticsService apiStatisticsService;
+    private final StatisticsService statisticsService;
     private final ApiPostService apiPostService;
 
     private final InitResponse initResponse;
@@ -63,19 +63,19 @@ public class ApiGeneralController {
     }
 
     @GetMapping("/statistics/all")
-    public ResponseEntity<ApiStatisticsResponse> getAllStatistics(){
+    public ResponseEntity<StatisticsResponse> getAllStatistics(){
         if(globalSettingsRepo.statisticsIsAccepted()
                 || SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
-            return new ResponseEntity<>(apiStatisticsService.getAll(), HttpStatus.OK);
+            return new ResponseEntity<>(statisticsService.getAll(), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
     @GetMapping("/statistics/my")
-    public ResponseEntity<ApiStatisticsResponse> getMyStatistics(){
+    public ResponseEntity<StatisticsResponse> getMyStatistics(){
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
-            return new ResponseEntity<>(apiStatisticsService.getMy(), HttpStatus.OK);
+            return new ResponseEntity<>(statisticsService.getMy(), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

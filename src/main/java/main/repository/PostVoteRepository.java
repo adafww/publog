@@ -51,4 +51,22 @@ public interface PostVoteRepository extends CrudRepository<PostVote, Integer> {
             "VALUES (:time, :value, :postId, :userId)",
             nativeQuery = true)
     void insertInto(@Param("time") Date time, @Param("postId") int postId, @Param("userId") int userId, @Param("value") boolean value);
+
+    @Query("select count (p) from PostVote p where p.value = true ")
+    int allLikeCount();
+
+    @Query("select count (p) " +
+            "from PostVote p " +
+            "left join User u on p.user.id = u.id " +
+            "where p.value = true and p.user.email like :email")
+    int usersLikeCount(@Param("email") String email);
+
+    @Query("select count (p) from PostVote p where p.value = false ")
+    int allDislikeCount();
+
+    @Query("select count (p) " +
+            "from PostVote p " +
+            "left join User u on p.user.id = u.id " +
+            "where p.value = false and p.user.email like :email")
+    int usersDislikeCount(@Param("email") String email);
 }
