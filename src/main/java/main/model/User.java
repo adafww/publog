@@ -2,6 +2,8 @@ package main.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import main.model.enums.Role;
+
 import javax.persistence.*;
 import java.util.Date;
 

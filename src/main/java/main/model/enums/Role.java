@@ -1,5 +1,6 @@
-package main.model;
+package main.model.enums;
 
+import main.model.enums.Permission;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Set;

@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ApiStatisticsDto {
+public class StatisticsDto {
 
     private long postsCount;
     private long likesCount;
@@ -15,7 +15,7 @@ public class ApiStatisticsDto {
     private long viewsCount;
     private Date firstPublication;
 
-    public ApiStatisticsDto(long postsCount, long likesCount, long dislikesCount, long viewsCount, Date firstPublication) {
+    public StatisticsDto(long postsCount, long likesCount, long dislikesCount, long viewsCount, Date firstPublication) {
         this.postsCount = postsCount;
         this.likesCount = likesCount;
         this.dislikesCount = dislikesCount;

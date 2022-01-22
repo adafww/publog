@@ -1,6 +1,6 @@
 package main.repository;
 
-import main.dto.ApiStatisticsDto;
+import main.dto.StatisticsDto;
 import main.model.Tag2Post;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -33,7 +33,7 @@ public interface Tag2PostRepository extends CrudRepository<Tag2Post, Integer> {
             "VALUE (:postId, (select t.id from lib.tags t where t.name = :tagName))", nativeQuery = true)
     void saveByPostAndTagName(@Param("postId") int postId, @Param("tagName") String tagName);
 
-    @Query("select new main.dto.ApiStatisticsDto(" +
+    @Query("select new main.dto.StatisticsDto(" +
             "(select count (p) from p), " +
             "(select count (pv) from pv where pv.value = true), " +
             "(select count (pv) from pv where pv.value = false), " +
@@ -42,9 +42,9 @@ public interface Tag2PostRepository extends CrudRepository<Tag2Post, Integer> {
             "from Tag2Post t2p " +
             "left join Post p on t2p.postId.id = p.id " +
             "left join PostVote pv on p.id = pv.post.id ")
-    ApiStatisticsDto getAllStatistics();
+    StatisticsDto getAllStatistics();
 
-    @Query("select new main.dto.ApiStatisticsDto(" +
+    @Query("select new main.dto.StatisticsDto(" +
             "(select count (p) from p where p.user.email like :email), " +
             "(select count (pv) from PostVote pv left join User u on pv.user = u where pv.value = true and u.email like :email), " +
             "(select count (pv) from PostVote pv left join User u on pv.user = u where pv.value = false and u.email like :email), " +
@@ -55,5 +55,5 @@ public interface Tag2PostRepository extends CrudRepository<Tag2Post, Integer> {
             "left join PostVote pv on p.id = pv.post.id " +
             "left join User u on t2p.postId.user.id = u.id " +
             "where t2p.postId.user.email like :email")
-    ApiStatisticsDto getMyStatistics(@Param("email") String email);
+    StatisticsDto getMyStatistics(@Param("email") String email);
 }

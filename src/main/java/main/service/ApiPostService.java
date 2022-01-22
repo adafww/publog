@@ -6,13 +6,13 @@ import main.api.request.PostRequest;
 import main.api.response.*;
 import main.dto.*;
 import main.model.*;
+import main.model.enums.ModerationStatusType;
 import main.repository.*;
 import org.jsoup.Jsoup;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 

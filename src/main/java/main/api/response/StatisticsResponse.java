@@ -7,13 +7,13 @@ import lombok.Setter;
 @Setter
 public class StatisticsResponse {
 
-    private int postsCount;
-    private int likesCount;
-    private int dislikesCount;
-    private int viewsCount;
+    private long postsCount;
+    private long likesCount;
+    private long dislikesCount;
+    private long viewsCount;
     private long firstPublication;
 
-    public StatisticsResponse(int postsCount, int likesCount, int dislikesCount, int viewsCount, long firstPublication) {
+    public StatisticsResponse(long postsCount, long likesCount, long dislikesCount, long viewsCount, long firstPublication) {
         this.postsCount = postsCount;
         this.likesCount = likesCount;
         this.dislikesCount = dislikesCount;

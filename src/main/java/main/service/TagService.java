@@ -9,6 +9,7 @@ import main.repository.TagRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -20,13 +21,14 @@ public class TagService {
     public TagResponse getTagResponse(){
 
         long length = tag2PostRepo.count();
+        List<TagForDtoRepository> tagForDtoRepositoryList = tagRepo.findAllForDto();
         boolean swch = true;
         double k = 0;
         ArrayList<TagDto> dtoList = new ArrayList<>();
         TagResponse tagResponse = new TagResponse();
         TagDto dto;
 
-        for(TagForDtoRepository tag : tagRepo.findAllForDto()){
+        for(TagForDtoRepository tag : tagForDtoRepositoryList){
 
             dto = new TagDto();
             if(swch){

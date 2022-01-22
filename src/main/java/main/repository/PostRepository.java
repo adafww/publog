@@ -1,11 +1,10 @@
 package main.repository;
 
-import main.dto.ApiStatisticsDto;
 import main.dto.PostCalendarDtoRepository;
 import main.dto.PostForDtoRepository;
-import main.model.ModerationStatusType;
+import main.dto.StatisticsDto;
+import main.model.enums.ModerationStatusType;
 import main.model.Post;
-import main.model.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PostRepository extends CrudRepository<Post, Integer> {
@@ -282,18 +280,38 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
                        @Param("title") String title,
                        @Param("text") String text);
 
-    @Query(value = "SELECT * FROM lib.posts JOIN lib.users ON lib.posts.user_id = lib.users.id " +
-            "WHERE lib.posts.is_active = 1 AND lib.posts.moderation_status = 'ACCEPTED' ", nativeQuery = true)
-    List<Post> getAllStatistics();
+    @Query("select new main.dto.StatisticsDto(" +
+            "count (p), " +
+            "sum (case when pv.value = true then 1 else 0 end), " +
+            "sum (case when pv.value = false then 1 else 0 end), " +
+            "sum (p.viewCount), " +
+            "min (p.time)) " +
+            "from Post p " +
+            "left join PostVote pv on p.id = pv.post.id ")
+    StatisticsDto getStatistics();
 
-    @Query(value = "SELECT * FROM lib.posts JOIN lib.users ON lib.posts.user_id = lib.users.id " +
-            "WHERE lib.posts.is_active = 1 AND lib.posts.moderation_status = 'ACCEPTED' " +
-            "AND lib.users.email = :email", nativeQuery = true)
-    List<Post> getMyStatistics(@Param("email") String email);
+    @Query("select new main.dto.StatisticsDto(" +
+            "count (p), " +
+            "sum (case when pv.value = true then 1 else 0 end), " +
+            "sum (case when pv.value = false then 1 else 0 end), " +
+            "sum (p.viewCount), " +
+            "min (p.time)) " +
+            "from Post p " +
+            "left join PostVote pv on p.id = pv.post.id " +
+            "left join User u on p.user.id = u.id " +
+            "where u.email like :email " +
+            "and p.moderationStatusType = 'ACCEPTED'")
+    StatisticsDto getUserStatistics(@Param("email") String email);
 
-    @Query("select sum (p.viewCount) from Post p")
-    int getAllViewsCount();
+    @Query("select case when count (p) > 0 then true else false end " +
+            "from Post p " +
+            "where p.moderationStatusType = 'ACCEPTED'")
+    boolean existsBy();
 
-    @Query("select sum (p.viewCount) from Post p left join User u on p.user.id = u.id where p.user.email like :email")
-    int getUsersViewsCount(@Param("email") String email);
+    @Query("select case when count (p) > 0 then true else false end " +
+            "from Post p " +
+            "left join User u on p.user.id = u.id " +
+            "where u.email like :email " +
+            "and p.moderationStatusType = 'ACCEPTED'")
+    boolean existsByUser(@Param("email") String email);
 }

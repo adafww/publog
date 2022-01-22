@@ -2,6 +2,7 @@ package main.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import main.model.enums.ModerationStatusType;
 import org.hibernate.annotations.Check;
 import javax.persistence.*;
 import java.util.Date;

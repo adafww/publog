@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface PostVoteRepository extends CrudRepository<PostVote, Integer> {
@@ -29,6 +30,14 @@ public interface PostVoteRepository extends CrudRepository<PostVote, Integer> {
             "and pv.user.id = :userId " +
             "and pv.value = true " )
     boolean isLike(@Param("postId") int postId, @Param("userId") int userId);
+
+    @Query("select case when count (pv) > 0 then true else false end " +
+            "from PostVote pv " +
+            "left join User u on pv.user.id = u.id " +
+            "left join Post p on pv.post.id = p.id " +
+            "where u.email like :email " +
+            "and p.moderationStatusType = 'ACCEPTED'")
+    boolean userExists(@Param("email") String email);
 
     @Modifying
     @Transactional
@@ -52,21 +61,11 @@ public interface PostVoteRepository extends CrudRepository<PostVote, Integer> {
             nativeQuery = true)
     void insertInto(@Param("time") Date time, @Param("postId") int postId, @Param("userId") int userId, @Param("value") boolean value);
 
-    @Query("select count (p) from PostVote p where p.value = true ")
-    int allLikeCount();
-
-    @Query("select count (p) " +
-            "from PostVote p " +
-            "left join User u on p.user.id = u.id " +
-            "where p.value = true and p.user.email like :email")
-    int usersLikeCount(@Param("email") String email);
-
-    @Query("select count (p) from PostVote p where p.value = false ")
-    int allDislikeCount();
-
-    @Query("select count (p) " +
-            "from PostVote p " +
-            "left join User u on p.user.id = u.id " +
-            "where p.value = false and p.user.email like :email")
-    int usersDislikeCount(@Param("email") String email);
+    @Query("select case when pv.value = true then 1 else 0 end " +
+            "from PostVote pv " +
+            "left join User u on pv.user.id = u.id " +
+            "left join Post p on pv.post.id = p.id " +
+            "where u.email like :email " +
+            "and p.moderationStatusType = 'ACCEPTED'")
+    List<Byte> getUserVotes(@Param("email") String email);
 }
