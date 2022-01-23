@@ -55,4 +55,21 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "set u.password = :newPass " +
             "where u.code like :code")
     void passUpdate(@Param("code") String code, @Param("newPass") String newPass);
+
+    @Modifying
+    @Transactional
+    @Query("update User u " +
+            "set u.email = :newEmail, u.name = :name " +
+            "where u.email like :email ")
+    void nameAndEmailUpdate(@Param("email") String email, @Param("newEmail") String newEmail, @Param("name") String name);
+
+    @Modifying
+    @Transactional
+    @Query("update User u " +
+            "set u.email = :newEmail, u.name = :name, u.password = :pass " +
+            "where u.email like :email")
+    void nameEmailAndPassUpdate(@Param("email") String email,
+                                @Param("newEmail") String newEmail,
+                                @Param("name") String name,
+                                @Param("pass") String pass);
 }
