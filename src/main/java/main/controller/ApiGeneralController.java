@@ -125,13 +125,17 @@ public class ApiGeneralController {
         }
     }
 
-    @PostMapping(value = "/profile/my")
-    public ResponseEntity<ErrorResponse> getDataProfile(@ModelAttribute ProfileRequest request) throws IOException {
+    @PostMapping(value = "/profile/my", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ErrorResponse> getDataProfile(@RequestParam(value = "photo") MultipartFile photo,
+                                                        @RequestParam(value = "name") String name,
+                                                        @RequestParam(value = "email") String email,
+                                                        @RequestParam(value = "password", required = false) String password,
+                                                        @RequestParam(value = "removePhoto") int removePhoto) throws IOException {
 
-        System.out.println(request.getName());
-        //System.out.println(photo.getContentType());
-        //System.out.println(Scalr.resize(ImageIO.read(new ByteArrayInputStream(photo.getBytes())), Scalr.Method.ULTRA_QUALITY,
-        //Scalr.Mode.FIT_EXACT, 36, 36).getWidth());
+        System.out.println(name);
+        System.out.println(photo.getContentType());
+        System.out.println(Scalr.resize(ImageIO.read(new ByteArrayInputStream(photo.getBytes())), Scalr.Method.ULTRA_QUALITY,
+        Scalr.Mode.FIT_EXACT, 36, 36).getWidth());
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
