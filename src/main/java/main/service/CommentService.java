@@ -3,6 +3,7 @@ package main.service;
 import lombok.RequiredArgsConstructor;
 import main.api.request.CommentRequest;
 import main.api.response.ErrorResponse;
+import main.model.PostComment;
 import main.repository.PostCommentRepository;
 import main.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;

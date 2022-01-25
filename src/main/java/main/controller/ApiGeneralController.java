@@ -161,7 +161,7 @@ public class ApiGeneralController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(imageService.upload(image), HttpStatus.OK);
+            return new ResponseEntity<>(imageService.   upload(image), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
