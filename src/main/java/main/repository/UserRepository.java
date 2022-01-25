@@ -54,22 +54,47 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("update User u " +
             "set u.password = :newPass " +
             "where u.code like :code")
-    void passUpdate(@Param("code") String code, @Param("newPass") String newPass);
+    void passUpdateByCode(@Param("code") String code, @Param("newPass") String newPass);
 
     @Modifying
     @Transactional
     @Query("update User u " +
-            "set u.email = :newEmail, u.name = :name " +
-            "where u.email like :email ")
-    void nameAndEmailUpdate(@Param("email") String email, @Param("newEmail") String newEmail, @Param("name") String name);
-
-    @Modifying
-    @Transactional
-    @Query("update User u " +
-            "set u.email = :newEmail, u.name = :name, u.password = :pass " +
+            "set u.password = :pass " +
             "where u.email like :email")
-    void nameEmailAndPassUpdate(@Param("email") String email,
-                                @Param("newEmail") String newEmail,
-                                @Param("name") String name,
-                                @Param("pass") String pass);
+    void passUpdate(@Param("email") String email, @Param("pass") String pass);
+
+    @Modifying
+    @Transactional
+    @Query("update User u " +
+            "set u.email = :newEmail " +
+            "where u.email like :email")
+    void emailUpdate(@Param("email") String email, @Param("newEmail") String newEmail);
+
+    @Query("select " +
+            "case when count (u) > 0 then true else false end " +
+            "from User u " +
+            "where u.email like :email " +
+            "and u.name like :name")
+    boolean existsNameByEmail(@Param("email") String email, @Param("name") String name);
+
+    @Modifying
+    @Transactional
+    @Query("update User u " +
+            "set u.name = :name " +
+            "where u.email like :email")
+    void nameUpdate(@Param("email") String email, @Param("name") String name);
+
+    @Modifying
+    @Transactional
+    @Query("update User u " +
+            "set u.photo = :path " +
+            "where u.email like :email")
+    void addPhoto(@Param("email") String email, @Param("path") String path);
+
+    @Modifying
+    @Transactional
+    @Query("update User u " +
+            "set u.photo = '' " +
+            "where u.email like :email")
+    void removePhoto(@Param("email") String email);
 }

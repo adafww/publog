@@ -73,7 +73,7 @@ public class RestoreService {
             return new ErrorResponse(false, errors);
         }else {
 
-            userRepo.passUpdate(request.getCode(), new BCryptPasswordEncoder(12)
+            userRepo.passUpdateByCode(request.getCode(), new BCryptPasswordEncoder(12)
                     .encode(request.getPassword()));
 
             return new ErrorResponse(true);

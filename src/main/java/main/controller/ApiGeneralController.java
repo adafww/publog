@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import main.api.request.CommentRequest;
 import main.api.request.ModerationRequest;
 import main.api.request.ProfileRequest;
+import main.api.request.ProfileWithPhotoRequest;
 import main.api.response.*;
 import main.repository.GlobalSettingsRepository;
 import main.service.*;
@@ -44,6 +45,7 @@ public class ApiGeneralController {
     private final StatisticsService statisticsService;
     private final PostService postService;
     private final ProfileService profileService;
+    private final ImageService imageService;
 
     private final InitResponse initResponse;
 
@@ -126,30 +128,43 @@ public class ApiGeneralController {
     }
 
     @PostMapping(value = "/profile/my", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ErrorResponse> getDataProfile(@RequestParam(value = "photo") MultipartFile photo,
-                                                        @RequestParam(value = "name") String name,
-                                                        @RequestParam(value = "email") String email,
-                                                        @RequestParam(value = "password", required = false) String password,
-                                                        @RequestParam(value = "removePhoto") int removePhoto) throws IOException {
-
-        System.out.println(name);
-        System.out.println(photo.getContentType());
-        System.out.println(Scalr.resize(ImageIO.read(new ByteArrayInputStream(photo.getBytes())), Scalr.Method.ULTRA_QUALITY,
-        Scalr.Mode.FIT_EXACT, 36, 36).getWidth());
+    public ResponseEntity<ErrorResponse> editProfile(@ModelAttribute ProfileWithPhotoRequest request) throws IOException {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(profileService.editProfile(request), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
-    @PostMapping(value = "/image")
-    public ResponseEntity<String> uploadImage(){
+    @PostMapping(value = "/profile/my", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ErrorResponse> editProfile(@RequestBody ProfileRequest request) throws IOException {
 
-        System.out.println("!!!");
-        return null;
+        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+
+            return new ResponseEntity<>(profileService.editProfile(
+                    new ProfileWithPhotoRequest(
+                    request.getName(),
+                    request.getEmail(),
+                    request.getPassword(),
+                    request.getRemovePhoto())), HttpStatus.OK);
+        }else {
+
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @PostMapping(value = "/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> uploadImage(@RequestParam(value = "image") MultipartFile image) throws IOException {
+
+        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+
+            return new ResponseEntity<>(imageService.upload(image), HttpStatus.OK);
+        }else {
+
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 }

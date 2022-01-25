@@ -26,6 +26,7 @@ public class User {
     @Column(nullable = false)
     private String password;
     private String code;
+    @Column(columnDefinition = "TEXT")
     private String photo;
 
     public User(Date time, String name, String email, String password) {

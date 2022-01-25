@@ -43,6 +43,7 @@ public class LoginService {
         userLoginResponse.setName(currentUser.getName());
         userLoginResponse.setModeration(currentUser.isModerator());
         userLoginResponse.setId(currentUser.getId());
+        userLoginResponse.setPhoto(currentUser.getPhoto());
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setResult(true);

@@ -2,16 +2,20 @@ package main.service;
 
 import lombok.RequiredArgsConstructor;
 import main.api.request.ProfileRequest;
+import main.api.request.ProfileWithPhotoRequest;
 import main.api.response.ErrorResponse;
 import main.repository.UserRepository;
 import org.imgscalr.Scalr;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ModelAttribute;
-
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
 
@@ -21,20 +25,22 @@ public class ProfileService {
 
     private final UserRepository userRepo;
 
-    /*public ErrorResponse changeProfile(ProfileRequest request){
+    public ErrorResponse editProfile(ProfileWithPhotoRequest request) {
 
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Hashtable<String, String> errors = new Hashtable<>();
         Pattern pattern = Pattern.compile("^[А-ЯЁа-яё]+");
         boolean check = false;
         boolean checkEmail = false;
+        boolean checkName = false;
         boolean checkAddPhoto = false;
         boolean checkRemove = false;
         boolean checkPassword = false;
 
+
         if(!userEmail.equals(request.getEmail())){
 
-            if(userRepo.existsByEmail("%" + request.getEmail() + "%")){
+            if(userRepo.existsByEmail(request.getEmail())){
 
                 errors.put("email", "Этот e-mail уже зарегистрирован");
                 check = true;
@@ -42,6 +48,11 @@ public class ProfileService {
 
                 checkEmail = true;
             }
+        }
+
+        if(!userRepo.existsNameByEmail(userEmail, request.getName())){
+
+            checkName = true;
         }
 
         if(request.getPhoto() != null){
@@ -59,6 +70,7 @@ public class ProfileService {
                 checkRemove = true;
             }
         }
+
         if(request.getPhoto() == null && request.getRemovePhoto() == 1){
 
             checkRemove = true;
@@ -87,42 +99,97 @@ public class ProfileService {
             return new ErrorResponse(false, errors);
         }else {
 
-            if(checkRemove) {
+            if(checkPassword) {
 
-                //удаление фото
+                userRepo.passUpdate(userEmail, new BCryptPasswordEncoder(12).encode(request.getPassword()));
             }
 
-            if(checkEmail && checkAddPhoto && checkPassword) {
+            if(checkEmail) {
 
-                //изменение почты, имени, пароля и добавление фото
-            }else if(checkEmail  && checkPassword) {
+                userRepo.emailUpdate(userEmail, request.getEmail());
+            }
 
-                //изменение почты, имени, пароля
-                userRepo.nameEmailAndPassUpdate(
-                        userEmail,
-                        request.getEmail(),
-                        request.getName(),
-                        new BCryptPasswordEncoder(12)
-                                .encode(request.getPassword()));
-            } else if(checkEmail) {
+            if(checkName) {
 
-                //изменение почты и имени
-                System.out.println(userEmail);
-                System.out.println(request.getEmail());
-                System.out.println(request.getName());
-                userRepo.nameAndEmailUpdate(userEmail, request.getEmail(), request.getName());
+                userRepo.nameUpdate(userEmail, request.getName());
+            }
+
+            if(checkRemove) {
+
+                userRepo.removePhoto(userEmail);
+            }
+
+            if(checkAddPhoto) {
+
+                try {
+
+                    userRepo.addPhoto(userEmail, uploadPhoto(ImageIO.read(new ByteArrayInputStream(request.getPhoto().getBytes()))));
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                }
             }
 
             return new ErrorResponse(true);
         }
-    }*/
+    }
 
-    /*System.out.println(request.getEmail());
-        System.out.println(request.getName());
-        System.out.println(request.getPassword());
-        System.out.println(request.getRemovePhoto());
-        System.out.println(request.getPhoto().getContentType());
-        System.out.println(Scalr.resize(ImageIO.read(new ByteArrayInputStream(request.getPhoto().getBytes())), Scalr.Method.ULTRA_QUALITY,
-    Scalr.Mode.FIT_EXACT, 36, 36).getWidth());*/
+    private String uploadPhoto(BufferedImage bufferedImage) throws IOException {
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(processing(bufferedImage), "png", out);
+
+        return "data:image/png;base64, " + Base64.getEncoder().encodeToString(out.toByteArray());
+    }
+
+    private BufferedImage processing(BufferedImage bufferedImage){
+
+        if(bufferedImage.getWidth() == bufferedImage.getHeight()){
+
+            return Scalr.resize(bufferedImage,
+                    Scalr.Method.ULTRA_QUALITY,
+                    Scalr.Mode.FIT_EXACT,
+                    36,
+                    36
+            );
+        } else if(bufferedImage.getWidth() > bufferedImage.getHeight()){
+
+            return Scalr.resize(cropWidth(bufferedImage),
+                    Scalr.Method.ULTRA_QUALITY,
+                    Scalr.Mode.FIT_EXACT,
+                    36,
+                    36
+            );
+        }else {
+
+            return Scalr.resize(cropHeight(bufferedImage),
+                    Scalr.Method.ULTRA_QUALITY,
+                    Scalr.Mode.FIT_EXACT,
+                    36,
+                    36
+            );
+        }
+    }
+
+    private static BufferedImage cropHeight(BufferedImage src){
+
+        return Scalr.crop(
+                src,
+                0,
+                src.getHeight() / 2 - src.getWidth() / 2,
+                src.getWidth() - 1,
+                src.getWidth() - 1
+        );
+    }
+
+    private static BufferedImage cropWidth(BufferedImage src){
+
+        return Scalr.crop(
+                src,
+                src.getWidth() / 2 - src.getHeight() / 2,
+                0,
+                src.getHeight() - 1,
+                src.getHeight() - 1
+        );
+    }
 }
