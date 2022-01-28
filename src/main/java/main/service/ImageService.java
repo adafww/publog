@@ -39,7 +39,7 @@ public class ImageService {
                 os.flush();
             }
 
-            return dir.toString();
+            return "\\" + dir.toString();
         }else {
 
             return "{\n" +

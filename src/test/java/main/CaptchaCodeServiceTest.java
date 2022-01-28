@@ -46,7 +46,7 @@ public class CaptchaCodeServiceTest {
 
     @Test
     @DisplayName("Данные сохранены в БД")
-    void CaptchaCodeServiceTest() {
+    void CaptchaCodeRepositoryTest() {
 
         new CaptchaService(codeRepository).getApiAuthCaptcha();
 

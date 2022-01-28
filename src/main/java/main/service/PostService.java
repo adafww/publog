@@ -26,9 +26,7 @@ public class PostService {
     private final Tag2PostRepository tag2PostRepo;
     private final TagRepository tagRepo;
 
-    public ErrorResponse moderationPosts(ModerationRequest request){
-
-        String modEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ErrorResponse moderationPosts(ModerationRequest request, String modEmail){
 
         if(request.getDecision().equals("accept")){
 
@@ -40,9 +38,7 @@ public class PostService {
 
         return new ErrorResponse(true);
     }
-    public PostResponse getModerationPosts(int offset, int limit, String status){
-
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public PostResponse getModerationPosts(int offset, int limit, String status, String email){
 
         List<PostForDtoRepository> postForDtoRepositoryList = null;
 

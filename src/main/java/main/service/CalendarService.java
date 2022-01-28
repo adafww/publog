@@ -25,7 +25,7 @@ public class CalendarService {
         return calendar(new SimpleDateFormat("yyyy").format(System.currentTimeMillis()));
     }
 
-    public CalendarResponse calendar(String year){
+    private CalendarResponse calendar(String year){
 
         CalendarResponse calendarResponse = new CalendarResponse();
         Hashtable<String, Integer> hashtable = new Hashtable<>();

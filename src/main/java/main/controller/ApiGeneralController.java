@@ -106,9 +106,12 @@ public class ApiGeneralController {
     @GetMapping("/statistics/my")
     public ResponseEntity<StatisticsResponse> getMyStatistics(){
 
-        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-            return new ResponseEntity<>(statisticsService.getMy(), HttpStatus.OK);
+
+        if(!email.equals("anonymousUser")){
+
+            return new ResponseEntity<>(statisticsService.getMy(email), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -120,7 +123,9 @@ public class ApiGeneralController {
 
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
 
-            return new ResponseEntity<>(postService.moderationPosts(request), HttpStatus.OK);
+            return new ResponseEntity<>(postService.moderationPosts(
+                    request,
+                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -25,9 +25,7 @@ public class StatisticsService {
         return new StatisticsResponse(0,0,0,0,0);
     }
 
-    public StatisticsResponse getMy(){
-
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+    public StatisticsResponse getMy(String name){
 
         boolean postsExist = postRepo.existsByUser(name);
         boolean votesExist = postVoteRepo.userExists(name);

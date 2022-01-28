@@ -124,7 +124,8 @@ public class ApiPostController {
 
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
 
-            return new ResponseEntity<>(postService.getModerationPosts(offset, limit, status), HttpStatus.OK);
+            return new ResponseEntity<>(postService.getModerationPosts(offset, limit, status,
+                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
