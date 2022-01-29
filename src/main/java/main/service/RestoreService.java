@@ -24,11 +24,10 @@ public class RestoreService {
     private final UserRepository userRepo;
     private final CaptchaCodeRepository captchaCodeRepo;
 
-    public ErrorResponse getRestore(RestoreRequest request) throws UnknownHostException {
+    public ErrorResponse getRestore(RestoreRequest request, String url) throws UnknownHostException {
 
         if(userRepo.existsByEmail(request.getEmail())){
 
-            String url = ServletUriComponentsBuilder.fromCurrentRequest().toUriString();
             String code = new HashCodeGenerator().generate(35, 45);
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             simpleMailMessage.setTo(request.getEmail());

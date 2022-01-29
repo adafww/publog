@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -43,7 +45,8 @@ public class ApiAuthController {
 
     @PostMapping("/restore")
     public ResponseEntity<ErrorResponse> restore(@RequestBody RestoreRequest request) throws UnknownHostException {
-        return new ResponseEntity<>(restoreService.getRestore(request), HttpStatus.OK);
+        return new ResponseEntity<>(restoreService.getRestore(request,
+                ServletUriComponentsBuilder.fromCurrentRequest().toUriString()), HttpStatus.OK);
     }
 
     @GetMapping(value = "/captcha")

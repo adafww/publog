@@ -25,9 +25,8 @@ public class ProfileService {
 
     private final UserRepository userRepo;
 
-    public ErrorResponse editProfile(ProfileWithPhotoRequest request) {
+    public ErrorResponse editProfile(ProfileWithPhotoRequest request, String userEmail) {
 
-        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Hashtable<String, String> errors = new Hashtable<>();
         Pattern pattern = Pattern.compile("^[А-ЯЁа-яё]+");
         boolean check = false;

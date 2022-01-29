@@ -10,6 +10,7 @@ import main.model.enums.ModerationStatusType;
 import main.repository.*;
 import org.jsoup.Jsoup;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -122,9 +123,8 @@ public class PostService {
         return postResponse;
     }
 
-    public PostIdResponse getPostById(int id){
+    public PostIdResponse getPostById(int id, String userEmail, int isMod){
 
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         PostIdResponse postIdResponse = new PostIdResponse();
         PostForDtoRepository postDtoIterable = postRepo.findPostId(id).stream().findFirst().get();
         List<CommentForPostForDto> comPostForDto = postCommentRepo.findPostCommentById(id);
@@ -132,8 +132,7 @@ public class PostService {
         CommentPostDto commentPostDto;
 
         //view count
-        if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 1
-                && !postRepo.isAuthor(id, currentUser)){
+        if(isMod == 1 && !postRepo.isAuthor(id, userEmail)){
 
             postRepo.incrementViewById(id);
         }

@@ -137,7 +137,8 @@ public class ApiGeneralController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(profileService.editProfile(request), HttpStatus.OK);
+            return new ResponseEntity<>(profileService.editProfile(request,
+                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -147,14 +148,16 @@ public class ApiGeneralController {
     @PostMapping(value = "/profile/my", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ErrorResponse> editProfile(@RequestBody ProfileRequest request) throws IOException {
 
-        if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if(!userEmail.equals("anonymousUser")){
 
             return new ResponseEntity<>(profileService.editProfile(
                     new ProfileWithPhotoRequest(
                     request.getName(),
                     request.getEmail(),
                     request.getPassword(),
-                    request.getRemovePhoto())), HttpStatus.OK);
+                    request.getRemovePhoto()), userEmail), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -166,7 +169,7 @@ public class ApiGeneralController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(imageService.   upload(image), HttpStatus.OK);
+            return new ResponseEntity<>(imageService.upload(image), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

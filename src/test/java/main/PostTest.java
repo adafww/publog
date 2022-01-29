@@ -58,7 +58,7 @@ public class PostTest {
 
     @Test
     @DisplayName("Тестирование метода getModerationPosts")
-    void getModerationPostsTest(){
+    void getModerationPostsTest() {
 
         PostForDtoRepository postForDtoRepository = new PostForDtoRepository(
                 1,
@@ -85,6 +85,134 @@ public class PostTest {
 
 
         Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
+    }
+
+    @Test
+    @DisplayName("Тестирование метода getApiPostMyResponse")
+    void getApiPostMyResponseTest() {
+
+        PostForDtoRepository postForDtoRepository = new PostForDtoRepository(
+                1,
+                new Date(),
+                1,
+                "titleTest",
+                "announceTest",
+                1,
+                1,
+                1,
+                1);
+        List<PostForDtoRepository> list = new ArrayList<>();
+        List<UserDto> userList = new ArrayList<>();
+        String email = "email";
+
+        list.add(postForDtoRepository);
+        userList.add(new UserDto(1, "testName"));
+
+        Mockito.when(postRepo.findPublishedByEmail(email, PageRequest.of(0, 10))).thenReturn(list);
+        Mockito.when(userRepo.findById(1)).thenReturn(userList);
+
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+                .getApiPostMyResponse(0, 10, email, "published");
+
+
+        Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
+
+    }
+
+    @Test
+    @DisplayName("Тестирование метода getApiPostResponse")
+    void getApiPostResponseTest() {
+
+        PostForDtoRepository postForDtoRepository = new PostForDtoRepository(
+                1,
+                new Date(),
+                1,
+                "titleTest",
+                "announceTest",
+                1,
+                1,
+                1,
+                1);
+        List<PostForDtoRepository> list = new ArrayList<>();
+        List<UserDto> userList = new ArrayList<>();
+        String email = "email";
+
+        list.add(postForDtoRepository);
+        userList.add(new UserDto(1, "testName"));
+
+        Mockito.when(postRepo.findPopular(PageRequest.of(0, 10))).thenReturn(list);
+        Mockito.when(userRepo.findById(1)).thenReturn(userList);
+
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+                .getApiPostResponse(0, 10, "popular");
+
+
+        Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
+
+    }
+
+    @Test
+    @DisplayName("Тестирование метода getApiPostSearch")
+    void getApiPostSearchTest() {
+
+        PostForDtoRepository postForDtoRepository = new PostForDtoRepository(
+                1,
+                new Date(),
+                1,
+                "titleTest",
+                "announceTest",
+                1,
+                1,
+                1,
+                1);
+        List<PostForDtoRepository> list = new ArrayList<>();
+        List<UserDto> userList = new ArrayList<>();
+        String query = "query";
+
+        list.add(postForDtoRepository);
+        userList.add(new UserDto(1, "testName"));
+
+        Mockito.when(postRepo.findPostSearch("%" + query + "%", PageRequest.of(0, 10))).thenReturn(list);
+        Mockito.when(userRepo.findById(1)).thenReturn(userList);
+
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+                .getApiPostSearch(0, 10, query);
+
+
+        Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
+
+    }
+
+    @Test
+    @DisplayName("Тестирование метода getPostById")
+    void getPostByIdTest() {
+
+        PostForDtoRepository postForDtoRepository = new PostForDtoRepository(
+                1,
+                new Date(),
+                1,
+                "titleTest",
+                "announceTest",
+                1,
+                1,
+                1,
+                1);
+        List<PostForDtoRepository> list = new ArrayList<>();
+        List<UserDto> userList = new ArrayList<>();
+        String query = "query";
+
+        list.add(postForDtoRepository);
+        userList.add(new UserDto(1, "testName"));
+
+        Mockito.when(postRepo.findPostSearch("%" + query + "%", PageRequest.of(0, 10))).thenReturn(list);
+        Mockito.when(userRepo.findById(1)).thenReturn(userList);
+
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+                .getApiPostSearch(0, 10, query);
+
+
+        Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
+
     }
 }
 

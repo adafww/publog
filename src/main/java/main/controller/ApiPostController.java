@@ -8,6 +8,7 @@ import main.repository.PostRepository;
 import main.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,7 +57,9 @@ public class ApiPostController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<PostIdResponse> postById(@PathVariable int id){
 
-        return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return new ResponseEntity<>(postService.getPostById(id, authentication.getName(), authentication.getAuthorities().size()), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = {"offset", "limit", "query"})
