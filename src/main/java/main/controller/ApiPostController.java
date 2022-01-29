@@ -101,7 +101,8 @@ public class ApiPostController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(postVotesService.getLike(request.getPostId()), HttpStatus.OK);
+            return new ResponseEntity<>(postVotesService.getLike(request.getPostId(),
+                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -113,7 +114,8 @@ public class ApiPostController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(postVotesService.getDislike(request.getPostId()), HttpStatus.OK);
+            return new ResponseEntity<>(postVotesService.getDislike(request.getPostId(),
+                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

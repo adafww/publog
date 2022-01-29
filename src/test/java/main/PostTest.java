@@ -6,6 +6,7 @@ import main.dto.PostDto;
 import main.dto.PostForDtoRepository;
 import main.dto.UserDto;
 import main.model.Post;
+import main.model.Tag;
 import main.model.User;
 import main.model.enums.ModerationStatusType;
 import main.repository.*;
@@ -214,39 +215,66 @@ public class PostTest {
         Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
 
     }
-}
 
+    @Test
+    @DisplayName("Тестирование метода getPostByTag")
+    void getPostByTagTest() {
 
-/*ModerationRequest request = new ModerationRequest();
-        String email = "userEmail";
-        request.setPostId(1);
-        request.setDecision("accepted");
-
-        Post post = new Post(
-                true,
-                ModerationStatusType.ACCEPTED,
-                new User(
-                        new Date(),
-                        "testName",
-                        "testEmail",
-                        "testPassword"),
+        PostForDtoRepository postForDtoRepository = new PostForDtoRepository(
+                1,
                 new Date(),
+                1,
                 "titleTest",
-                "textTest");
-        List<Post> postList = new ArrayList<>();
-        postList.add(post);*/
-//Assertions.assertTrue(service.moderationPosts(request, email).isResult());
+                "announceTest",
+                1,
+                1,
+                1,
+                1);
+        List<PostForDtoRepository> list = new ArrayList<>();
+        List<UserDto> userList = new ArrayList<>();
 
-/*
+        list.add(postForDtoRepository);
+        userList.add(new UserDto(1, "testName"));
 
-    PostDto postDto = new PostDto(
-            1,
-            1L, new UserDto(
-            1,
-            "testName"),
-            "titleTest",
-            "test",
-            1,
-            1,
-            1,
-            1);*/
+        Mockito.when(postRepo.findByTag("test", PageRequest.of(0, 10))).thenReturn(list);
+        Mockito.when(userRepo.findById(1)).thenReturn(userList);
+
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+                .getPostByTag(0, 10, "test");
+
+
+        Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
+
+    }
+
+    @Test
+    @DisplayName("Тестирование метода getPostByDate")
+    void getPostByDateTest() {
+
+        PostForDtoRepository postForDtoRepository = new PostForDtoRepository(
+                1,
+                new Date(),
+                1,
+                "titleTest",
+                "announceTest",
+                1,
+                1,
+                1,
+                1);
+        List<PostForDtoRepository> list = new ArrayList<>();
+        List<UserDto> userList = new ArrayList<>();
+
+        list.add(postForDtoRepository);
+        userList.add(new UserDto(1, "testName"));
+
+        Mockito.when(postRepo.findByDate("%" + "date" + "%", PageRequest.of(0, 10))).thenReturn(list);
+        Mockito.when(userRepo.findById(1)).thenReturn(userList);
+
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+                .getPostByDate(0, 10, "date");
+
+
+        Assertions.assertTrue(postResponse.getPosts().size() == 1 && postResponse.getCount() == 1);
+
+    }
+}

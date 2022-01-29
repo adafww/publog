@@ -16,9 +16,9 @@ public class PostVotesService {
     private final PostVoteRepository postVoteRepo;
     private final UserRepository userRepo;
 
-    public ErrorResponse getLike(int postId){
+    public ErrorResponse getLike(int postId, String userEmail){
 
-        int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        int userId = userRepo.idByEmail(userEmail);
 
         if(postVoteRepo.voted(postId, userId)){
 
@@ -39,9 +39,9 @@ public class PostVotesService {
         }
     }
 
-    public ErrorResponse getDislike(int postId){
+    public ErrorResponse getDislike(int postId, String userEmail){
 
-        int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        int userId = userRepo.idByEmail(userEmail);
 
         if(postVoteRepo.voted(postId, userId)){
 
