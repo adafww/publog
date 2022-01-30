@@ -21,9 +21,9 @@ public class CommentService {
     private final PostCommentRepository postCommentRepo;
     private final UserRepository userRepo;
 
-    public int getCommentOk(CommentRequest request){
+    public int getCommentOk(CommentRequest request, String userEmail){
 
-        int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        int userId = userRepo.idByEmail(userEmail);
         Date date = new Date();
 
         if(request.getParentId() == null){

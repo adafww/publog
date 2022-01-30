@@ -35,12 +35,15 @@ public class LoginServiceTest {
         String email = "email";
         AuthenticationManager authenticationManager = Mockito.mock(AuthenticationManager.class);
         Authentication authentication = Mockito.mock(Authentication.class);
+
         Mockito.when(authenticationManager.authenticate(Mockito.isA(Authentication.class))).thenReturn(authentication);
+
         User user = new User(email, "pass", true, true, true, true, authentication.getAuthorities());
+
         Mockito.when((User) authentication.getPrincipal()).thenReturn(user);
         Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(new main.model.User(new Date(), "user", email, "pass")));
+
         new LoginService(userRepository, authenticationManager).getLoginResponse(email, "pass");
         Assertions.assertEquals(authentication, SecurityContextHolder.getContext().getAuthentication());
-
     }
 }

@@ -97,7 +97,8 @@ public class ApiGeneralController {
             return new ResponseEntity<>(commentService.getCommentFalse(), HttpStatus.BAD_REQUEST);
         }else {
 
-            return new ResponseEntity<>(commentService.getCommentOk(request), HttpStatus.OK);
+            return new ResponseEntity<>(commentService.getCommentOk(request,
+                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
         }
     }
 

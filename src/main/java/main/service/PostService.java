@@ -209,7 +209,7 @@ public class PostService {
         return dtoFinal;
     }
 
-    public ErrorResponse getCreatePost(PostRequest request){
+    public ErrorResponse getCreatePost(PostRequest request, String userEmail){
 
         Hashtable<String, String> errors = errors(request);
 
@@ -218,15 +218,12 @@ public class PostService {
             return new ErrorResponse(false, errors);
         }else {
 
-            savePost(request);
+            savePost(request, userEmail);
             return new ErrorResponse(true);
         }
     }
 
-    public ErrorResponse editPost(PostRequest request, int postId){
-
-        int userStatus = SecurityContextHolder.getContext().getAuthentication().getAuthorities().size();
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ErrorResponse editPost(PostRequest request, int postId, int userStatus, String userName){
 
         if(userStatus == 2 || postRepo.isAuthor(postId, userName)){
 
@@ -269,9 +266,9 @@ public class PostService {
         }
     }
 
-    private void savePost(PostRequest request){
+    private void savePost(PostRequest request, String userEmail){
 
-        User user = userRepo.findByName(SecurityContextHolder.getContext().getAuthentication().getName());
+        User user = userRepo.findByName(userEmail);
         Post post = postRepo.save(
                 new Post(
                         request.getActive() == 1,

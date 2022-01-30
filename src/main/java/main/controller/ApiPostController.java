@@ -28,7 +28,8 @@ public class ApiPostController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(postService.getCreatePost(request), HttpStatus.OK);
+            return new ResponseEntity<>(postService.getCreatePost(request,
+                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -40,7 +41,10 @@ public class ApiPostController {
 
         if(postRepo.isAuthor(id, SecurityContextHolder.getContext().getAuthentication().getName())){
 
-            return new ResponseEntity<>(postService.editPost(request, id), HttpStatus.OK);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            return new ResponseEntity<>(postService.editPost(request, id,
+                    auth.getAuthorities().size(), auth.getName()), HttpStatus.OK);
         }else {
 
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
