@@ -58,7 +58,7 @@ public class ApiAuthController {
     public ResponseEntity<LoginResponse> check(Principal principal){
 
         if(principal == null){
-            return ResponseEntity.ok(new LoginResponse());
+            return ResponseEntity.ok(new LoginResponse(false));
         }
         return ResponseEntity.ok(loginService.getLoginResponse(principal.getName()));
     }
@@ -70,7 +70,24 @@ public class ApiAuthController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest entity) {
-        return ResponseEntity.ok(loginService.getLoginResponse(entity.getEmail(), entity.getPassword()));
+
+        LoginResponse loginResponse = new LoginResponse();
+
+        try {
+
+            loginResponse = loginService.getLoginResponse(entity.getEmail(), entity.getPassword());
+        }catch (Exception ex){
+
+        }
+
+        if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()){
+
+            return ResponseEntity.ok(loginResponse);
+        }else {
+
+            return ResponseEntity.ok(new LoginResponse(false));
+        }
+
     }
 
     @GetMapping("/logout")

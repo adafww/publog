@@ -44,6 +44,9 @@ public class PostTest {
     @Mock
     private TagRepository tagRepo;
 
+    @Mock
+    private GlobalSettingsRepository globalSettingsRepo;
+
     @Test
     @DisplayName("Тестирование метода moderationPosts")
     void moderationPostsTest(){
@@ -53,7 +56,7 @@ public class PostTest {
         request.setPostId(1);
         request.setDecision("accepted");
 
-        Assertions.assertTrue(new PostService(postRepo,userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        Assertions.assertTrue(new PostService(postRepo,userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .moderationPosts(request, email).isResult());
     }
 
@@ -81,7 +84,7 @@ public class PostTest {
         Mockito.when(postRepo.findModerationPosts(ModerationStatusType.ACCEPTED, email, PageRequest.of(0, 10))).thenReturn(list);
         Mockito.when(userRepo.findById(1)).thenReturn(userList);
 
-        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .getModerationPosts(0, 10, "accepted", email);
 
 
@@ -112,7 +115,7 @@ public class PostTest {
         Mockito.when(postRepo.findPublishedByEmail(email, PageRequest.of(0, 10))).thenReturn(list);
         Mockito.when(userRepo.findById(1)).thenReturn(userList);
 
-        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .getApiPostMyResponse(0, 10, email, "published");
 
 
@@ -144,7 +147,7 @@ public class PostTest {
         Mockito.when(postRepo.findPopular(PageRequest.of(0, 10))).thenReturn(list);
         Mockito.when(userRepo.findById(1)).thenReturn(userList);
 
-        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .getApiPostResponse(0, 10, "popular");
 
 
@@ -176,7 +179,7 @@ public class PostTest {
         Mockito.when(postRepo.findPostSearch("%" + query + "%", PageRequest.of(0, 10))).thenReturn(list);
         Mockito.when(userRepo.findById(1)).thenReturn(userList);
 
-        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .getApiPostSearch(0, 10, query);
 
 
@@ -208,7 +211,7 @@ public class PostTest {
         Mockito.when(postRepo.findPostSearch("%" + query + "%", PageRequest.of(0, 10))).thenReturn(list);
         Mockito.when(userRepo.findById(1)).thenReturn(userList);
 
-        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .getApiPostSearch(0, 10, query);
 
 
@@ -239,7 +242,7 @@ public class PostTest {
         Mockito.when(postRepo.findByTag("test", PageRequest.of(0, 10))).thenReturn(list);
         Mockito.when(userRepo.findById(1)).thenReturn(userList);
 
-        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .getPostByTag(0, 10, "test");
 
 
@@ -270,7 +273,7 @@ public class PostTest {
         Mockito.when(postRepo.findByDate("%" + "date" + "%", PageRequest.of(0, 10))).thenReturn(list);
         Mockito.when(userRepo.findById(1)).thenReturn(userList);
 
-        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo)
+        PostResponse postResponse = new PostService(postRepo, userRepo, postCommentRepo, tag2PostRepo, tagRepo, globalSettingsRepo)
                 .getPostByDate(0, 10, "date");
 
 

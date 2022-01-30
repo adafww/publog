@@ -1,6 +1,7 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
+import main.api.request.SettingsRequest;
 import main.api.response.SettingsResponse;
 import main.model.GlobalSettings;
 import main.repository.GlobalSettingsRepository;
@@ -23,5 +24,22 @@ public class SettingsService {
         settingsResponse.setStatisticIsPublic(list.get(2).getValue().equals("YES"));
 
         return settingsResponse;
+    }
+
+    public void editSettings(SettingsRequest request){
+
+        globalSettingsRepo.updateMultiuserMode(toStringValue(request.isMultiuserMode()));
+        globalSettingsRepo.updatePostPremoderation(toStringValue(request.isPostPremoderation()));
+        globalSettingsRepo.updateStatisticsIsPublic(toStringValue(request.isStatisticsIsPublic()));
+
+    }
+
+    private String toStringValue(boolean value){
+
+        if(value){
+            return "YES";
+        }else {
+            return "NO";
+        }
     }
 }

@@ -10,7 +10,6 @@ import main.model.enums.ModerationStatusType;
 import main.repository.*;
 import org.jsoup.Jsoup;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,7 @@ public class PostService {
     private final PostCommentRepository postCommentRepo;
     private final Tag2PostRepository tag2PostRepo;
     private final TagRepository tagRepo;
+    private final GlobalSettingsRepository globalSettingsRepo;
 
     public ErrorResponse moderationPosts(ModerationRequest request, String modEmail){
 
@@ -142,7 +142,7 @@ public class PostService {
             commentPostDto = new CommentPostDto();
             commentPostDto.setId(postComment.getId());
             commentPostDto.setTimestamp(Long.parseLong(Long.toString(postComment.getTimestamp().getTime()).substring(0, Long.toString(postComment.getTimestamp().getTime()).length() - 3)));
-            commentPostDto.setText(Jsoup.parse(postComment.getText()).text());
+            commentPostDto.setText(postComment.getText());
             commentPostDto.setUser(userRepo.findByIdWithPhoto(postComment.getUserId()).stream().findFirst().get());
             commentPostDtoList.add(commentPostDto);
         }
@@ -240,6 +240,7 @@ public class PostService {
                 if(userStatus == 2){
 
                     postRepo.postModUpdate(
+                            moderationStatusType(),
                             userName,
                             postId,
                             new Date(Long.parseLong(request.getTimestamp() + "000")),
@@ -250,6 +251,7 @@ public class PostService {
                 }else {
 
                     postRepo.postUpdate(
+                            moderationStatusType(),
                             postId,
                             new Date(Long.parseLong(request.getTimestamp() + "000")),
                             request.getActive() == 1,
@@ -273,13 +275,24 @@ public class PostService {
         Post post = postRepo.save(
                 new Post(
                         request.getActive() == 1,
-                        ModerationStatusType.NEW,
+                        moderationStatusType(),
                         user,
                         new Date(Long.parseLong(request.getTimestamp() + "000")),
                         request.getTitle(),
                         request.getText()
                 ));
         saveTags(request, post);
+    }
+
+    private ModerationStatusType moderationStatusType(){
+
+        if(globalSettingsRepo.isPostPremoderation()){
+
+            return ModerationStatusType.NEW;
+        }else {
+
+            return ModerationStatusType.ACCEPTED;
+        }
     }
 
     private Hashtable<String, String> errors(PostRequest request){

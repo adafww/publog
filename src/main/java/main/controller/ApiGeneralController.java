@@ -1,10 +1,7 @@
 package main.controller;
 
 import lombok.RequiredArgsConstructor;
-import main.api.request.CommentRequest;
-import main.api.request.ModerationRequest;
-import main.api.request.ProfileRequest;
-import main.api.request.ProfileWithPhotoRequest;
+import main.api.request.*;
 import main.api.response.*;
 import main.repository.GlobalSettingsRepository;
 import main.service.*;
@@ -61,6 +58,20 @@ public class ApiGeneralController {
         return settingsService.getGlobalSettings();
     }
 
+    @PutMapping("/settings")
+    public ResponseEntity<Object>editSettings(@RequestBody SettingsRequest request){
+
+        if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
+
+            settingsService.editSettings(request);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+    }
+
     @GetMapping("/tag")
     public TagResponse apiTag(){
         return tagService.getTagResponse();
@@ -79,7 +90,7 @@ public class ApiGeneralController {
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<ErrorResponse> getCommentResponse(@RequestBody CommentRequest request){
+    public ResponseEntity<Object> getCommentResponse(@RequestBody CommentRequest request){
 
         if(request.getText().length() < 5){
 
@@ -165,7 +176,7 @@ public class ApiGeneralController {
     }
 
     @PostMapping(value = "/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadImage(@RequestParam(value = "image") MultipartFile image) throws IOException {
+    public ResponseEntity<Object> uploadImage(@RequestParam(value = "image") MultipartFile image) throws IOException {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 

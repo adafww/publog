@@ -34,10 +34,10 @@ public interface PostCommentRepository extends CrudRepository<PostComment, Integ
     @Transactional
     @Query(value = "insert into " +
             "lib.post_comments(text, time, parent_id, post_id, user_id) " +
-            "VALUE(:text, :time, :parentId, :postId, :userId)",
+            "VALUE(:text, :time, :parentId, :postId, :userId) ",
             nativeQuery = true)
     void saveParentCommentPost(@Param("parentId") int parentId, @Param("postId") int postId, @Param("userId") int userId, @Param("time") Date time, @Param("text") String text);
 
-    @Query("select p.id from PostComment p where p.time = :time and p.text like :text")
-    int id(@Param("time") Date time, @Param("text") String text);
+    @Query("select p.id from PostComment p where p.time = :time")
+    int id(@Param("time") Date time);
 }

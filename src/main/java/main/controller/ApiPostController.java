@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import main.api.request.PostRequest;
 import main.api.request.PostVotesRequest;
 import main.api.response.*;
+import main.repository.GlobalSettingsRepository;
 import main.repository.PostRepository;
 import main.service.*;
 import org.springframework.http.HttpStatus;

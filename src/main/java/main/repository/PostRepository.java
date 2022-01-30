@@ -255,9 +255,10 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     @Modifying
     @Transactional
     @Query("update Post p " +
-            "set p.time = :time, p.isActive = :active, p.title = :title, p.text = :text, p.moderationStatusType = 'NEW' " +
+            "set p.time = :time, p.isActive = :active, p.title = :title, p.text = :text, p.moderationStatusType = :moderationStatusType " +
             "where p.id = :postId ")
-    void postUpdate(@Param("postId") int postId,
+    void postUpdate(@Param("moderationStatusType") ModerationStatusType moderationStatusType,
+                    @Param("postId") int postId,
                     @Param("time") Date time,
                     @Param("active") boolean active,
                     @Param("title") String title,
@@ -272,9 +273,10 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "p.isActive = :active, " +
             "p.title = :title, " +
             "p.text = :text, " +
-            "p.moderationStatusType = 'NEW' " +
+            "p.moderationStatusType = :moderationStatusType " +
             "where p.id = :postId ")
-    void postModUpdate(@Param("modEmail") String modEmail,
+    void postModUpdate(@Param("moderationStatusType") ModerationStatusType moderationStatusType,
+                       @Param("modEmail") String modEmail,
                        @Param("postId") int postId,
                        @Param("time") Date time,
                        @Param("active") boolean active,

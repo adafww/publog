@@ -3,7 +3,9 @@ package main.service;
 import lombok.RequiredArgsConstructor;
 import main.api.request.CommentRequest;
 import main.api.response.ErrorResponse;
+import main.model.Post;
 import main.model.PostComment;
+import main.model.User;
 import main.repository.PostCommentRepository;
 import main.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +21,7 @@ public class CommentService {
     private final PostCommentRepository postCommentRepo;
     private final UserRepository userRepo;
 
-    public ErrorResponse getCommentOk(CommentRequest request){
+    public int getCommentOk(CommentRequest request){
 
         int userId = userRepo.idByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Date date = new Date();
@@ -41,7 +43,7 @@ public class CommentService {
                     request.getText());
         }
 
-        return new ErrorResponse(postCommentRepo.id(date, request.getText()));
+        return postCommentRepo.id(date);
     }
 
     public ErrorResponse getCommentFalse(){
