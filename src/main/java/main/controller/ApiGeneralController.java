@@ -80,13 +80,13 @@ public class ApiGeneralController {
     @GetMapping(value = "/calendar", params = {"year"})
     public ResponseEntity<CalendarResponse> postCalendar(@RequestParam String year){
 
-        return new ResponseEntity<>(calendarService.getCalendar(year), HttpStatus.OK);
+        return ResponseEntity.ok(calendarService.getCalendar(year));
     }
 
     @GetMapping(value = "/calendar")
     public ResponseEntity<CalendarResponse> postCalendar(){
 
-        return new ResponseEntity<>(calendarService.getCalendar(), HttpStatus.OK);
+        return ResponseEntity.ok(calendarService.getCalendar());
     }
 
     @PostMapping("/comment")
@@ -108,7 +108,7 @@ public class ApiGeneralController {
         if(globalSettingsRepo.statisticsIsAccepted()
                 || SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
 
-            return new ResponseEntity<>(statisticsService.getAll(), HttpStatus.OK);
+            return ResponseEntity.ok(statisticsService.getAll());
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -123,7 +123,7 @@ public class ApiGeneralController {
 
         if(!email.equals("anonymousUser")){
 
-            return new ResponseEntity<>(statisticsService.getMy(email), HttpStatus.OK);
+            return ResponseEntity.ok(statisticsService.getMy(email));
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -135,9 +135,9 @@ public class ApiGeneralController {
 
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
 
-            return new ResponseEntity<>(postService.moderationPosts(
+            return ResponseEntity.ok(postService.moderationPosts(
                     request,
-                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
+                    SecurityContextHolder.getContext().getAuthentication().getName()));
         }else {
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -149,8 +149,8 @@ public class ApiGeneralController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(profileService.editProfile(request,
-                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
+            return ResponseEntity.ok(profileService.editProfile(request,
+                    SecurityContextHolder.getContext().getAuthentication().getName()));
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -164,12 +164,12 @@ public class ApiGeneralController {
 
         if(!userEmail.equals("anonymousUser")){
 
-            return new ResponseEntity<>(profileService.editProfile(
+            return ResponseEntity.ok(profileService.editProfile(
                     new ProfileWithPhotoRequest(
                     request.getName(),
                     request.getEmail(),
                     request.getPassword(),
-                    request.getRemovePhoto()), userEmail), HttpStatus.OK);
+                    request.getRemovePhoto()), userEmail));
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -181,7 +181,7 @@ public class ApiGeneralController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(imageService.upload(image), HttpStatus.OK);
+            return ResponseEntity.ok(imageService.upload(image));
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

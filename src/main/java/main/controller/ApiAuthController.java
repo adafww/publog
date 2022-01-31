@@ -40,17 +40,20 @@ public class ApiAuthController {
 
     @PostMapping("/password")
     public ResponseEntity<ErrorResponse> changePassword(@RequestBody PassChangerRequest request){
-        return new ResponseEntity<>(restoreService.changePass(request), HttpStatus.OK);
+
+        return ResponseEntity.ok(restoreService.changePass(request));
     }
 
     @PostMapping("/restore")
     public ResponseEntity<ErrorResponse> restore(@RequestBody RestoreRequest request) throws UnknownHostException {
-        return new ResponseEntity<>(restoreService.getRestore(request,
-                ServletUriComponentsBuilder.fromCurrentRequest().toUriString()), HttpStatus.OK);
+
+        return ResponseEntity.ok(restoreService.getRestore(request,
+                ServletUriComponentsBuilder.fromCurrentRequest().toUriString()));
     }
 
     @GetMapping(value = "/captcha")
     public CaptchaResponse captcha() throws IOException {
+
         return captchaService.getApiAuthCaptcha();
     }
 
@@ -58,14 +61,17 @@ public class ApiAuthController {
     public ResponseEntity<LoginResponse> check(Principal principal){
 
         if(principal == null){
+
             return ResponseEntity.ok(new LoginResponse(false));
         }
+
         return ResponseEntity.ok(loginService.getLoginResponse(principal.getName()));
     }
 
     @PostMapping(value = "/register")
     public ResponseEntity<ErrorResponse> register(@RequestBody RegFormRequest entity) {
-        return new ResponseEntity<>(registerService.getApiAuthRegisterResponse(entity), HttpStatus.OK);
+
+        return ResponseEntity.ok(registerService.getApiAuthRegisterResponse(entity));
     }
 
     @PostMapping(value = "/login")
@@ -78,6 +84,7 @@ public class ApiAuthController {
             loginResponse = loginService.getLoginResponse(entity.getEmail(), entity.getPassword());
         }catch (Exception ex){
 
+            ex.getMessage();
         }
 
         if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()){
@@ -92,11 +99,15 @@ public class ApiAuthController {
 
     @GetMapping("/logout")
     public ResponseEntity<ErrorResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
         if (auth != null) {
+
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
-        return new ResponseEntity<>(new ErrorResponse(true), HttpStatus.OK);
+        return ResponseEntity.ok(new ErrorResponse(true));
     }
 }

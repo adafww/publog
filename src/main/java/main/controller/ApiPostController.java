@@ -28,8 +28,8 @@ public class ApiPostController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(postService.getCreatePost(request,
-                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
+            return ResponseEntity.ok(postService.getCreatePost(request,
+                    SecurityContextHolder.getContext().getAuthentication().getName()));
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -43,8 +43,8 @@ public class ApiPostController {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-            return new ResponseEntity<>(postService.editPost(request, id,
-                    auth.getAuthorities().size(), auth.getName()), HttpStatus.OK);
+            return ResponseEntity.ok(postService.editPost(request, id,
+                    auth.getAuthorities().size(), auth.getName()));
         }else {
 
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,7 +56,7 @@ public class ApiPostController {
                                                  @RequestParam(defaultValue = "10", required = false) int limit,
                                                  @RequestParam(defaultValue = "recent", required = false) String mode){
 
-        return new ResponseEntity<>(postService.getApiPostResponse(offset, limit, mode), HttpStatus.OK);
+        return ResponseEntity.ok(postService.getApiPostResponse(offset, limit, mode));
     }
 
     @GetMapping(value = "/{id}")
@@ -64,7 +64,7 @@ public class ApiPostController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return new ResponseEntity<>(postService.getPostById(id, authentication.getName(), authentication.getAuthorities().size()), HttpStatus.OK);
+        return ResponseEntity.ok(postService.getPostById(id, authentication.getName(), authentication.getAuthorities().size()));
     }
 
     @GetMapping(value = "/search", params = {"offset", "limit", "query"})
@@ -72,19 +72,19 @@ public class ApiPostController {
                                                    @RequestParam int limit,
                                                    @RequestParam String query){
 
-        return new ResponseEntity<>(postService.getApiPostSearch(offset, limit, query), HttpStatus.OK);
+        return ResponseEntity.ok(postService.getApiPostSearch(offset, limit, query));
     }
 
     @GetMapping(value = "/byDate", params = {"offset", "limit", "date"})
     public ResponseEntity<PostResponse> postByDate(@RequestParam int offset, @RequestParam int limit, @RequestParam String date){
 
-        return new ResponseEntity<>(postService.getPostByDate(offset, limit, date), HttpStatus.OK);
+        return ResponseEntity.ok(postService.getPostByDate(offset, limit, date));
     }
 
     @GetMapping(value = "/byTag", params = {"offset", "limit", "tag"})
     public ResponseEntity<PostResponse> postByTag(@RequestParam int offset, @RequestParam int limit, @RequestParam String tag){
 
-        return new ResponseEntity<>(postService.getPostByTag(offset, limit, tag), HttpStatus.OK);
+        return ResponseEntity.ok(postService.getPostByTag(offset, limit, tag));
     }
 
     @GetMapping(value = "/my", params = {"offset", "limit", "status"})
@@ -92,13 +92,12 @@ public class ApiPostController {
                                                @RequestParam(defaultValue = "10", required = false) int limit,
                                                @RequestParam String status) {
 
-        return new ResponseEntity<>(postService.getApiPostMyResponse(
+        return ResponseEntity.ok(postService.getApiPostMyResponse(
                 offset, limit,
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication()
-                        .getName(), status),
-                HttpStatus.OK);
+                        .getName(), status));
     }
 
     @PostMapping("/like")
@@ -106,8 +105,8 @@ public class ApiPostController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(postVotesService.getLike(request.getPostId(),
-                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
+            return ResponseEntity.ok(postVotesService.getLike(request.getPostId(),
+                    SecurityContextHolder.getContext().getAuthentication().getName()));
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -119,8 +118,8 @@ public class ApiPostController {
 
         if(!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
 
-            return new ResponseEntity<>(postVotesService.getDislike(request.getPostId(),
-                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
+            return ResponseEntity.ok(postVotesService.getDislike(request.getPostId(),
+                    SecurityContextHolder.getContext().getAuthentication().getName()));
         }else {
 
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -134,8 +133,8 @@ public class ApiPostController {
 
         if(SecurityContextHolder.getContext().getAuthentication().getAuthorities().size() == 2){
 
-            return new ResponseEntity<>(postService.getModerationPosts(offset, limit, status,
-                    SecurityContextHolder.getContext().getAuthentication().getName()), HttpStatus.OK);
+            return ResponseEntity.ok(postService.getModerationPosts(offset, limit, status,
+                    SecurityContextHolder.getContext().getAuthentication().getName()));
         }else {
 
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

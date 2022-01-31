@@ -4,7 +4,7 @@
 
 ### Стек технологий
 - Java 11
-- Spring Boot 2.3.12
+- Spring Boot 2.2.4.RELEASE
 - Maven
 - MySQL 8
 - Git
