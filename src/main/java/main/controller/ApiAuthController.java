@@ -68,7 +68,7 @@ public class ApiAuthController {
         return ResponseEntity.ok(loginService.getLoginResponse(principal.getName()));
     }
 
-    @PostMapping(value = "/register")
+    @PostMapping("/register")
     public ResponseEntity<ErrorResponse> register(@RequestBody RegFormRequest entity) {
 
         return ResponseEntity.ok(registerService.getApiAuthRegisterResponse(entity));

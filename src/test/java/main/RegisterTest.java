@@ -30,12 +30,12 @@ public class RegisterTest {
     @DisplayName("Успешный ответ метода getTagResponse c сохранением данных в БД")
     void registerOkTest(){
 
-        RegFormRequest request = new RegFormRequest(
-                "mail@.ru",
-                "testPassword",
-                "Тест",
-                "testCaptcha",
-                "testSecretCode");
+        RegFormRequest request = new RegFormRequest();
+        request.setEEmail("mail@.ru");
+        request.setPassword("testPassword");
+        request.setName("Тест");
+        request.setCaptcha("testCaptcha");
+        request.setCaptchaSecret("testSecretCode");
 
         Mockito.when(userRepo.existsByEmail("%" + request.getEEmail() + "%")).thenReturn(false);
         Mockito.when(captchaCodeRepo.existsByCaptcha(request.getCaptcha())).thenReturn(true);
@@ -50,12 +50,12 @@ public class RegisterTest {
     @DisplayName("Ответ метода getTagResponse со всеми возможными ошибками")
     void registerFailTest(){
 
-        RegFormRequest request = new RegFormRequest(
-                "mail@.ru",
-                "test",
-                "Тест1",
-                "testCaptcha",
-                "testSecretCode");
+        RegFormRequest request = new RegFormRequest();
+        request.setEEmail("mail@.ru");
+        request.setPassword("testPassword");
+        request.setName("Тест");
+        request.setCaptcha("testCaptcha");
+        request.setCaptchaSecret("testSecretCode");
 
         Mockito.when(userRepo.existsByEmail("%" + request.getEEmail() + "%")).thenReturn(true);
         Mockito.when(captchaCodeRepo.existsByCaptcha(request.getCaptcha())).thenReturn(false);

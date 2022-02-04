@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class PostRequest {
+
     private long timestamp;
     private byte active;
     private String title;
