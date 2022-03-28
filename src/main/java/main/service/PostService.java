@@ -27,30 +27,26 @@ public class PostService {
     private final TagRepository tagRepo;
     private final GlobalSettingsRepository globalSettingsRepo;
 
-    public ErrorResponse moderationPosts(ModerationRequest request, String modEmail){
+    public ErrorResponse moderationPosts(ModerationRequest request, String modEmail) {
 
-        if(request.getDecision().equals("accept")){
-
+        if (request.getDecision().equals("accept")) {
             postRepo.moderationStatus(modEmail, request.getPostId(), ModerationStatusType.ACCEPTED);
-        }else if(request.getDecision().equals("decline")){
-
+        } else if (request.getDecision().equals("decline")) {
             postRepo.moderationStatus(modEmail, request.getPostId(), ModerationStatusType.DECLINED);
         }
 
         return new ErrorResponse(true);
     }
-    public PostResponse getModerationPosts(int offset, int limit, String status, String email){
+
+    public PostResponse getModerationPosts(int offset, int limit, String status, String email) {
 
         List<PostForDtoRepository> postForDtoRepositoryList = null;
 
-        if(status.equals("new")){
-
+        if (status.equals("new")) {
             postForDtoRepositoryList = postRepo.findNewActivePosts(PageRequest.of(offset, limit));
-        }else if(status.equals("declined")){
-
+        } else if (status.equals("declined")) {
             postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.DECLINED, email, PageRequest.of(offset, limit));
-        }else if(status.equals("accepted")){
-
+        } else if (status.equals("accepted")) {
             postForDtoRepositoryList = postRepo.findModerationPosts(ModerationStatusType.ACCEPTED, email, PageRequest.of(offset, limit));
         }
 
@@ -62,21 +58,17 @@ public class PostService {
         return postResponse;
     }
 
-    public PostResponse getApiPostMyResponse(int offset, int limit, String email, String status){
+    public PostResponse getApiPostMyResponse(int offset, int limit, String email, String status) {
 
         List<PostForDtoRepository> postForDtoRepositoryList = null;
 
-        if(status.equals("inactive")){
-
+        if (status.equals("inactive")) {
             postForDtoRepositoryList = postRepo.findInactiveByEmail(email, PageRequest.of(offset, limit));
-        }else if(status.equals("pending")){
-
+        } else if (status.equals("pending")) {
             postForDtoRepositoryList = postRepo.findPendingByEmail(email, PageRequest.of(offset, limit));
-        }else if(status.equals("declined")){
-
+        } else if (status.equals("declined")) {
             postForDtoRepositoryList = postRepo.findDeclinedByEmail(email, PageRequest.of(offset, limit));
-        }else if(status.equals("published")) {
-
+        } else if (status.equals("published")) {
             postForDtoRepositoryList = postRepo.findPublishedByEmail(email, PageRequest.of(offset, limit));
         }
 
@@ -92,17 +84,13 @@ public class PostService {
 
         List<PostForDtoRepository> postDtoIterable;
 
-        if(mode.equals("popular")){
-
+        if (mode.equals("popular")) {
             postDtoIterable = postRepo.findPopular(PageRequest.of(offset, limit));
-        }else if(mode.equals("best")){
-
+        } else if (mode.equals("best")) {
             postDtoIterable = postRepo.findBest(PageRequest.of(offset, limit));
-        }else if(mode.equals("early")){
-
+        } else if (mode.equals("early")) {
             postDtoIterable = postRepo.findEarly(PageRequest.of(offset, limit));
-        }else {
-
+        } else {
             postDtoIterable = postRepo.findRecent(PageRequest.of(offset, limit));
         }
 
@@ -113,7 +101,7 @@ public class PostService {
         return postResponse;
     }
 
-    public PostResponse getApiPostSearch(int offset, int limit, String query){
+    public PostResponse getApiPostSearch(int offset, int limit, String query) {
 
         List<PostForDtoRepository> postDtoIterable = postRepo.findPostSearch("%" + query + "%", PageRequest.of(offset, limit));
         PostResponse postResponse = new PostResponse();
@@ -123,7 +111,7 @@ public class PostService {
         return postResponse;
     }
 
-    public PostIdResponse getPostById(int id, String userEmail, int isMod){
+    public PostIdResponse getPostById(int id, String userEmail, int isMod) {
 
         PostIdResponse postIdResponse = new PostIdResponse();
         PostForDtoRepository postDtoIterable = postRepo.findPostId(id).stream().findFirst().get();
@@ -132,12 +120,11 @@ public class PostService {
         CommentPostDto commentPostDto;
 
         //view count
-        if(isMod == 1 && !postRepo.isAuthor(id, userEmail)){
-
+        if (isMod == 1 && !postRepo.isAuthor(id, userEmail)) {
             postRepo.incrementViewById(id);
         }
 
-        for(CommentForPostForDto postComment : comPostForDto){
+        for (CommentForPostForDto postComment : comPostForDto) {
 
             commentPostDto = new CommentPostDto();
             commentPostDto.setId(postComment.getId());
@@ -162,7 +149,7 @@ public class PostService {
         return postIdResponse;
     }
 
-    public PostResponse getPostByTag(int offset, int limit, String tag){
+    public PostResponse getPostByTag(int offset, int limit, String tag) {
 
         List<PostForDtoRepository> postDtoIterable = postRepo.findByTag(tag, PageRequest.of(offset, limit));
 
@@ -173,7 +160,7 @@ public class PostService {
         return postResponse;
     }
 
-    public PostResponse getPostByDate(int offset, int limit, String date){
+    public PostResponse getPostByDate(int offset, int limit, String date) {
 
         List<PostForDtoRepository> postDtoIterable = postRepo.findByDate("%" + date + "%", PageRequest.of(offset, limit));
 
@@ -184,12 +171,12 @@ public class PostService {
         return postResponse;
     }
 
-    private List<PostDto> postDtoList(List<PostForDtoRepository> listDto){
+    private List<PostDto> postDtoList(List<PostForDtoRepository> listDto) {
 
         List<PostDto> dtoFinal = new ArrayList<>();
         PostDto dto;
         int announceLimit = 150;
-        for (PostForDtoRepository post : listDto){
+        for (PostForDtoRepository post : listDto) {
 
             dto = new PostDto();
             String announceText = Jsoup.parse(post.getAnnounce()).text();
@@ -209,32 +196,32 @@ public class PostService {
         return dtoFinal;
     }
 
-    public ErrorResponse getCreatePost(PostRequest request, String userEmail){
+    public ErrorResponse getCreatePost(PostRequest request, String userEmail) {
 
         Hashtable<String, String> errors = errors(request);
 
-        if(errors.size() != 0){
-
+        if (errors.size() != 0) {
             return new ErrorResponse(false, errors);
-        }else {
-
+        } else {
             savePost(request, userEmail);
             return new ErrorResponse(true);
         }
     }
 
-    public ErrorResponse editPost(PostRequest request, int postId, int userStatus, String userName){
+    public ErrorResponse editPost(PostRequest request, int postId, int userStatus, String userName) {
 
-        if(userStatus == 2 || postRepo.isAuthor(postId, userName)){
 
+        //!!!!!!!!!
+        if (userStatus == 2 || postRepo.isAuthor(postId, userName)) {
+        //!!
             Hashtable<String, String> errors = errors(request);
 
-            if(errors.size() != 0){
+            if (errors.size() != 0) {
 
                 return new ErrorResponse(false, errors);
-            }else {
+            } else {
 
-                if(userStatus == 2){
+                if (userStatus == 2) {
 
                     postRepo.postModUpdate(
                             moderationStatusType(),
@@ -245,7 +232,7 @@ public class PostService {
                             request.getTitle(),
                             request.getText()
                     );
-                }else {
+                } else {
 
                     postRepo.postUpdate(
                             moderationStatusType(),
@@ -260,13 +247,13 @@ public class PostService {
 
                 return new ErrorResponse(true);
             }
-        }else {
+        } else {
 
             return new ErrorResponse(false);
         }
     }
 
-    private void savePost(PostRequest request, String userEmail){
+    private void savePost(PostRequest request, String userEmail) {
 
         User user = userRepo.findByName(userEmail);
         Post post = postRepo.save(
@@ -281,50 +268,46 @@ public class PostService {
         saveTags(request, post);
     }
 
-    private ModerationStatusType moderationStatusType(){
+    private ModerationStatusType moderationStatusType() {
 
-        if(globalSettingsRepo.isPostPremoderation()){
+        if (globalSettingsRepo.isPostPremoderation()) {
 
             return ModerationStatusType.NEW;
-        }else {
+        } else {
 
             return ModerationStatusType.ACCEPTED;
         }
     }
 
-    private Hashtable<String, String> errors(PostRequest request){
+    private Hashtable<String, String> errors(PostRequest request) {
 
         Hashtable<String, String> errors = new Hashtable<>();
 
-        if(request.getTitle().length() < 5){
-
+        if (request.getTitle().length() < 5) {
             errors.put("title", "Заголовок не установлен");
         }
 
-        if(request.getText().length() < 50){
-
+        if (request.getText().length() < 50) {
             errors.put("text", "Текст публикации слишком короткий");
         }
 
         return errors;
     }
 
-    private void saveTags(PostRequest request, Post post){
+    private void saveTags(PostRequest request, Post post) {
 
-        for (String str : request.getTags()){
+        for (String str : request.getTags()) {
 
             if (!tagRepo.existsByName(str)) {
-
                 int id = tagRepo.save(new Tag(str)).getId();
                 tag2PostRepo.save(new Tag2Post(post, new Tag(id, str)));
-            }else {
-
+            } else {
                 tag2PostRepo.saveByPostAndTagName(post.getId(), str);
             }
         }
     }
 
-    private void updateTags(PostRequest request, int id){
+    private void updateTags(PostRequest request, int id) {
 
         List<String> oldTagList = tagRepo.tagsByPostId(id);
         List<String> newTagList = request.getTags();
@@ -339,22 +322,19 @@ public class PostService {
                 .filter(a -> oldTagList.stream().noneMatch(b -> b.equals(a)))
                 .collect(Collectors.toList());
 
-        for (String str : saveTagList){
+        for (String str : saveTagList) {
 
-            if(!tagRepo.existsByName(str)){
-
+            if (!tagRepo.existsByName(str)) {
                 tag2PostRepo.saveByPostAndTagName(id, tagRepo.save(new Tag(str)).getName());
-            }else {
-
+            } else {
                 tag2PostRepo.saveByPostAndTagName(id, str);
             }
         }
 
-        for(String str : delTagList){
+        for (String str : delTagList) {
 
             tag2PostRepo.delete(tag2PostRepo.findByName(id, str).get(0));
-            if(tagRepo.tagsByName(str) == 0){
-
+            if (tagRepo.tagsByName(str) == 0) {
                 tagRepo.delete(tagRepo.findByName(str));
             }
         }
