@@ -77,6 +77,8 @@ public class ApiAuthController {
     @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest entity) {
 
+        System.out.println("!!!!");
+        System.out.println(entity);
         LoginResponse loginResponse = new LoginResponse();
 
         try {
