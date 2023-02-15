@@ -2,18 +2,13 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: '80958095'
+    build: ./mysql
     ports:
       - "3306:3306"
-    volumes:
-      - ./data:/var/lib/mysql
-    command: --init-file /var/lib/mysql/create_db.sql
-
+    environment:
+      - MYSQL_ROOT_PASSWORD=80958095
   backend:
-    build: ../website_engine_f
+    build: .
     restart: always
     ports:
       - "80:80"
@@ -23,11 +18,3 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/lib
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 80958095
-
-  frontend:
-    image: nginx:alpine
-    restart: always
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html
-    ports:
-      - "81:81"
