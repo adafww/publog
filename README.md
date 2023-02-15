@@ -9,10 +9,6 @@
 - Git
 
 ### С чего начать
-Для запуска проекта локально необходимо создать пустую базу данных. В resources/application.yml указываются ее URL, пользователь и пароль (spring.datasource (url, user, password)).
-
+Запуск в Docker-compose командой: docker-compose up --build
 Пароли для тестовых пользователей зашифрованы в БД с помощью BCrypt (12 rounds).
 
-<!-- ### Ссылка на рабочий проект
-[devpub](http://devpub.ddns.net/)
- -->
