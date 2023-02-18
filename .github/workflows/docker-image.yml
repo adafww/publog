@@ -32,19 +32,6 @@ jobs:
       - name: Build and publish Java image
         run: |
           docker build -t my-app-java .
-          docker tag my-app-java ${{ env.DOCKER_REGISTRY }}/my-app-java:latest
+          docker tag my-app-java adafww/pet-project:latest
           docker login -u ${{ env.DOCKER_USERNAME }} -p ${{ env.DOCKER_PASSWORD }} ${{ env.DOCKER_REGISTRY }}
-          docker push ${{ env.DOCKER_REGISTRY }}/my-app-java:latest
-
-  build-mysql-image:
-    needs: build-app
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build and publish MySQL image
-        run: |
-          docker build -t my-app-mysql ./mysql
-          docker tag my-app-mysql ${{ env.DOCKER_REGISTRY }}/my-app-mysql:latest
-          docker login -u ${{ env.DOCKER_USERNAME }} -p ${{ env.DOCKER_PASSWORD }} ${{ env.DOCKER_REGISTRY }}
-          docker push ${{ env.DOCKER_REGISTRY }}/my-app-mysql:latest
+          docker push adafww/pet-project:latest
