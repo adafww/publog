@@ -18,8 +18,8 @@ jobs:
     - name: Build and publish Java image
       run: |
         docker build -t my-app-java .
-        docker tag my-app-java my-docker-registry/my-app-java:latest
-        docker push my-docker-registry/my-app-java:latest
+        docker tag my-app-java adafww/pet-project:latest
+        docker push adafww/pet-project:latest
       env:
         APP_HOME: /root/dev/app/
     - name: Build and publish MySQL image
@@ -27,8 +27,8 @@ jobs:
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
       run: |
         docker build -t my-app-mysql ./mysql
-        docker tag my-app-mysql my-docker-registry/my-app-mysql:latest
-        docker push my-docker-registry/my-app-mysql:latest
+        docker tag my-app-mysql adafww/pet-project:latest
+        docker push adafww/pet-project:latest
     - name: Login to Docker registry
       uses: docker/login-action@v1
       with:
