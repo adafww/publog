@@ -13,3 +13,4 @@ The DevPub blog engine allows users to publish articles and leave comments, whil
 To launch the project via docker-compose, the script used is: docker-compose up --build.
 
 Passwords for test users are encrypted in the database using BCrypt (12 rounds).
+
