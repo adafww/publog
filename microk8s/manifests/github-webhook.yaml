@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github-webhook-secret
+  namespace: default
+stringData:
+  secret: <YOUR_SECRET> # здесь нужно указать ваш секретный ключ
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-webhook
+spec:
+  selector:
+    matchLabels:
+      app: github-webhook
+  template:
+    metadata:
+      labels:
+        app: github-webhook
+    spec:
+      containers:
+        - name: github-webhook
+          image: <YOUR_IMAGE> # здесь нужно указать ваш образ с кодом для вебхука
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: github-webhook-secret
+                  key: secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: github-webhook
+spec:
+  selector:
+    app: github-webhook
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  type: NodePort

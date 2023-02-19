@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: docker-registry
+  namespace: default
+  uid: 6fb33a15-3960-4832-a557-f720aee2c7ae
+  resourceVersion: '110344'
+  creationTimestamp: '2023-02-18T21:30:28Z'
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"v1","data":{".dockerconfigjson":"ewoJImF1dGhzIjogewoJCSJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CgkJCSJhdXRoIjogIllXUmhabmQzT21SamEzSmZjR0YwWDE5YWEwUkdSVXMyUjNoQlNUbDBVVUZJTVROYU9YWmFjRmRCYnc9PSIKCQl9Cgl9Cn0="},"kind":"Secret","metadata":{"annotations":{},"name":"docker-registry","namespace":"default"},"type":"kubernetes.io/dockerconfigjson"}
+  managedFields:
+    - manager: kubectl-client-side-apply
+      operation: Update
+      apiVersion: v1
+      time: '2023-02-18T21:30:28Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:data:
+          .: {}
+          f:.dockerconfigjson: {}
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:kubectl.kubernetes.io/last-applied-configuration: {}
+        f:type: {}
+  selfLink: /api/v1/namespaces/default/secrets/docker-registry
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: >-
+    ewoJImF1dGhzIjogewoJCSJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CgkJCSJhdXRoIjogIllXUmhabmQzT21SamEzSmZjR0YwWDE5YWEwUkdSVXMyUjNoQlNUbDBVVUZJTVROYU9YWmFjRmRCYnc9PSIKCQl9Cgl9Cn0=
