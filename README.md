@@ -8,9 +8,11 @@ The DevPub blog engine allows users to publish articles and leave comments, whil
 - MySQL 8
 - Git
 - Docker-compose
+- Microk8s
 
 ### How to start
-To launch the project via docker-compose, the script used is: docker-compose up --build.
-
+To run the project locally using docker-compose, navigate to the root of the project and run the bash script:
+```bash
+docker-compose up --build
+```
 Passwords for test users are encrypted in the database using BCrypt (12 rounds).
-
