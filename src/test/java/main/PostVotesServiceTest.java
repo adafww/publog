@@ -3,7 +3,6 @@ package main;
 import main.api.response.ErrorResponse;
 import main.repository.PostVoteRepository;
 import main.repository.UserRepository;
-import main.service.PostService;
 import main.service.PostVotesService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -11,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.Date;
-
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

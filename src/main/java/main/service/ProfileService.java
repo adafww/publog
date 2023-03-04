@@ -1,19 +1,16 @@
 package main.service;
 
 import lombok.RequiredArgsConstructor;
-import main.api.request.ProfileRequest;
 import main.api.request.ProfileWithPhotoRequest;
 import main.api.response.ErrorResponse;
 import main.repository.UserRepository;
 import org.imgscalr.Scalr;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Hashtable;

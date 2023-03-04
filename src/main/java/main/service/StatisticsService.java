@@ -5,7 +5,6 @@ import main.api.response.StatisticsResponse;
 import main.dto.StatisticsDto;
 import main.repository.PostRepository;
 import main.repository.PostVoteRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import main.api.response.ErrorResponse;
 import main.repository.PostVoteRepository;
 import main.repository.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 
 @RequiredArgsConstructor

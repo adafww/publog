@@ -3,12 +3,8 @@ package main.service;
 import lombok.RequiredArgsConstructor;
 import main.api.request.CommentRequest;
 import main.api.response.ErrorResponse;
-import main.model.Post;
-import main.model.PostComment;
-import main.model.User;
 import main.repository.PostCommentRepository;
 import main.repository.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

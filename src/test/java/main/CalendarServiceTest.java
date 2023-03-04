@@ -2,13 +2,8 @@ package main;
 
 import main.api.response.CalendarResponse;
 import main.dto.PostCalendarDtoRepository;
-import main.model.CaptchaCode;
-import main.model.Post;
-import main.model.User;
-import main.model.enums.ModerationStatusType;
 import main.repository.PostRepository;
 import main.service.CalendarService;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.data.domain.PageRequest;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 

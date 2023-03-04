@@ -2,7 +2,6 @@ package main.api.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter

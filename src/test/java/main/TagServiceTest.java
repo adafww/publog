@@ -5,7 +5,6 @@ import main.dto.TagForDtoRepository;
 import main.repository.Tag2PostRepository;
 import main.repository.TagRepository;
 import main.service.TagService;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Тестирование TagService")

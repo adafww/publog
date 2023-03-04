@@ -10,7 +10,6 @@ import main.service.CaptchaService;
 import main.service.RegisterService;
 import main.service.LoginService;
 import main.service.RestoreService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;

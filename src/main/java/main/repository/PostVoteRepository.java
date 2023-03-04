@@ -1,8 +1,6 @@
 package main.repository;
 
-import main.model.Post;
 import main.model.PostVote;
-import main.model.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

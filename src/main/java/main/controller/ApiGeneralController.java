@@ -5,29 +5,12 @@ import main.api.request.*;
 import main.api.response.*;
 import main.repository.GlobalSettingsRepository;
 import main.service.*;
-import org.hibernate.annotations.Parameter;
-import org.imgscalr.Scalr;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.mail.MailException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageInputStream;
-import javax.servlet.annotation.MultipartConfig;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 @RequiredArgsConstructor

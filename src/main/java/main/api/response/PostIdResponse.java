@@ -2,11 +2,8 @@ package main.api.response;
 
 import lombok.Getter;
 import lombok.Setter;
-import main.dto.CommentForPostForDto;
 import main.dto.CommentPostDto;
 import main.dto.UserDto;
-
-import java.util.HashSet;
 import java.util.List;
 
 @Getter

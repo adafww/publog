@@ -1,9 +1,7 @@
 package main;
 
-import main.api.response.UserLoginResponse;
 import main.repository.UserRepository;
 import main.service.LoginService;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-
 import java.util.Date;
 import java.util.Optional;
 

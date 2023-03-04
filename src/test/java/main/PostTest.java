@@ -4,7 +4,6 @@ import main.api.request.ModerationRequest;
 import main.api.request.PostRequest;
 import main.api.response.ErrorResponse;
 import main.api.response.PostResponse;
-import main.dto.PostDto;
 import main.dto.PostForDtoRepository;
 import main.dto.UserDto;
 import main.model.Post;
@@ -14,7 +13,6 @@ import main.model.User;
 import main.model.enums.ModerationStatusType;
 import main.repository.*;
 import main.service.PostService;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +21,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -145,7 +141,6 @@ public class PostTest {
                 1);
         List<PostForDtoRepository> list = new ArrayList<>();
         List<UserDto> userList = new ArrayList<>();
-        String email = "email";
 
         list.add(postForDtoRepository);
         userList.add(new UserDto(1, "testName"));
