@@ -52,8 +52,8 @@ public class RegisterTest {
 
         RegFormRequest request = new RegFormRequest();
         request.setEEmail("mail@.ru");
-        request.setPassword("testPassword");
-        request.setName("Тест");
+        request.setPassword("test");
+        request.setName("Test");
         request.setCaptcha("testCaptcha");
         request.setCaptchaSecret("testSecretCode");
 
